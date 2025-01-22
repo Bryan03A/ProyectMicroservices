@@ -2,17 +2,18 @@
 package handlers
 
 import (
-    "net/http"
-    "github.com/gin-gonic/gin"
-    "search-and-filters-service/services"
+	"net/http"
+	"search-and-filters-service/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SearchModels(c *gin.Context) {
-    query := c.Query("query")
-    results, err := services.SearchModels(query)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    c.JSON(http.StatusOK, results)
+	query := c.Query("query")
+	results, err := services.SearchModels(query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, results)
 }
