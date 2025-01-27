@@ -1,9 +1,0 @@
-# Ignore environment files (if used)
-.env
-
-# Ignore editor configuration files (optional)
-.idea/
-.vscode/
-
-# Ignore virtual environment folder
-venv/
