@@ -1,0 +1,12 @@
+{
+    "name": "user-service",
+    "version": "1.0.0",
+    "description": "Microservice to manage users",
+    "main": "server.js",
+    "dependencies": {
+        "bcrypt": "^5.1.1",
+        "express": "^4.21.2",
+        "pg": "^8.13.1",
+        "uuid": "^11.0.5"
+    }
+}
