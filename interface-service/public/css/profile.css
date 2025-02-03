@@ -1,0 +1,156 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .logo a {
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.navbar .nav-links ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.navbar .nav-links li {
+    margin-left: 20px;
+}
+
+.navbar .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.navbar .nav-links a:hover {
+    color: #ff9f00;
+}
+
+.navbar .nav-links #user-settings {
+    position: relative;
+    cursor: pointer;
+}
+
+.navbar .nav-links .dropdown {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 150px;
+}
+
+.navbar .nav-links #user-settings.open .dropdown {
+    display: block;
+}
+
+.navbar .nav-links .dropdown a {
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.navbar .nav-links .dropdown a:hover {
+    background-color: #f4f4f4;
+}
+
+/* Models Section */
+.models-container {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.models-container h2 {
+    text-align: center;
+    color: #333;
+}
+
+.model-card {
+    background-color: #fff;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.model-card h3 {
+    color: #333;
+    font-size: 20px;
+}
+
+.model-card p {
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.model-card button.delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.model-card button.delete-btn:hover {
+    background-color: #ff3333;
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .nav-links ul {
+        flex-direction: column;
+    }
+
+    .models-container {
+        padding: 15px;
+    }
+
+    .model-card {
+        margin: 10px;
+    }
+}

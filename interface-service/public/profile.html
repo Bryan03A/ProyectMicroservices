@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="navbar">
+            <div class="logo">
+                <a href="index.html">3D Model Shop</a>
+            </div>
+            <div class="nav-links">
+                <ul>
+                    <li><a href="catalog.html" class="nav-link" id="catalogLink">Add</a></li>
+                    <!-- If logged in, show username and the settings icon, else show login/register -->
+                    <li id="login-register-link" style="display: none;"><a href="login.html">Login</a> / <a href="register.html">Register</a></li>
+                    <li id="user-settings" style="display: none;">
+                        <span id="username"></span> 
+                        <span id="settings-icon">&#9881;</span> <!-- Gear icon -->
+                        <div id="settings-dropdown" class="dropdown">
+                            <a href="profile.html">Profile</a>
+                            <a href="#" id="logout-link">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="models-container">
+        <h2>Your Models</h2>
+        <div id="user-models"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 3D Model Shop. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+
+            if (!token || !username) {
+                window.location.href = 'login.html'; // Redirect if no session is active
+                return;
+            }
+
+            // Function to load user models
+            async function loadUserModels() {
+                try {
+                    const response = await fetch(`http://localhost:5003/models/user/${username}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Error fetching models");
+                    }
+
+                    const data = await response.json();
+                    displayModels(data.models);
+                } catch (error) {
+                    console.error("Error loading models:", error);
+                    document.getElementById('user-models').innerHTML = "<p>Error loading models</p>";
+                }
+            }
+
+            // Function to display models in the interface
+            function displayModels(models) {
+                const container = document.getElementById('user-models');
+                container.innerHTML = ""; // Clear old content
+
+                if (models.length === 0) {
+                    container.innerHTML = "<p>No models found.</p>";
+                    return;
+                }
+
+                models.forEach(model => {
+                    const modelCard = document.createElement('div');
+                    modelCard.classList.add('model-card');
+                    modelCard.innerHTML = `
+                        <h3>${model.name}</h3>
+                        <p>${model.description}</p>
+                        <p><strong>Format:</strong> ${model.format}</p>
+                        <p><strong>Price:</strong> $${model.price}</p>
+                        <p><strong>Tags:</strong> ${model.tags.join(', ')}</p>
+                        <button class="delete-btn" data-name="${model.name}">Delete</button>
+                    `;
+                    container.appendChild(modelCard);
+                });
+
+                // Adding events to delete buttons
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const modelName = this.getAttribute('data-name');
+                        if (confirm(`Are you sure you want to delete ${modelName}?`)) {
+                            await deleteModel(modelName);
+                        }
+                    });
+                });
+            }
+
+            // Function to delete a model
+            async function deleteModel(modelName) {
+                try {
+                    const response = await fetch(`http://localhost:5003/models/${modelName}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert("Model deleted successfully!");
+                        loadUserModels(); // Reload models after deleting
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Error: ${errorData.error}`);
+                    }
+                } catch (error) {
+                    console.error("Error deleting model:", error);
+                    alert("Failed to delete model.");
+                }
+            }
+
+            // Check if the user is logged in
+            document.addEventListener('DOMContentLoaded', () => {
+                const token = localStorage.getItem('token');
+                const username = localStorage.getItem('username');
+
+                const userSettings = document.getElementById('user-settings');
+                const settingsIcon = document.getElementById('settings-icon');
+                const settingsDropdown = document.getElementById('settings-dropdown');
+                const loginRegisterLink = document.getElementById('login-register-link');
+                const logoutLink = document.getElementById('logout-link');
+                
+                if (token && username) {
+                    // Show user settings and username if logged in
+                    document.getElementById('user-settings').style.display = 'block';
+                    document.getElementById('username').innerText = username;
+                    document.getElementById('login-register-link').style.display = 'none';
+                } else {
+                    // Show login/register links if not logged in
+                    document.getElementById('login-register-link').style.display = 'block';
+                    document.getElementById('user-settings').style.display = 'none';
+                }
+
+                // Toggle dropdown visibility when clicking the settings icon
+                settingsIcon.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent the event from propagating
+
+                    userSettings.classList.toggle('open');
+
+                    if (userSettings.classList.contains('open')) {
+                        const rect = settingsIcon.getBoundingClientRect();
+                        const dropdownWidth = settingsDropdown.offsetWidth;
+                        const screenWidth = window.innerWidth;
+
+                        if (rect.left + dropdownWidth > screenWidth) {
+                            settingsDropdown.style.left = `${rect.left - dropdownWidth + settingsIcon.offsetWidth}px`;
+                        } else {
+                            settingsDropdown.style.left = `${rect.left}px`;
+                        }
+
+                        settingsDropdown.style.top = `${rect.bottom + window.scrollY}px`;
+                    }
+                });
+
+                // Logout function
+                logoutLink.addEventListener('click', () => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('username');
+                    window.location.href = 'index.html'; // Redirect to home after logout
+                });
+
+                // Session verification logic
+                document.addEventListener('DOMContentLoaded', async function() {
+                    const token = localStorage.getItem('token');
+                    
+                    if (token) {
+                        try {
+                            const response = await fetch('http://localhost:5004/api/sessions/verify', {
+                                method: 'GET',
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+
+                            const data = await response.json();
+                            if (response.ok) {
+                                console.log("Session is valid", data);
+                            } else {
+                                alert('Session expired or invalid, please log in again.');
+                                localStorage.removeItem('token');
+                                window.location.href = 'login.html';
+                            }
+                        } catch (error) {
+                            console.error('Error verifying session:', error);
+                        }
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                });
+
+                // Close the dropdown if clicked outside
+                document.addEventListener('click', (event) => {
+                    if (!userSettings.contains(event.target) && !settingsIcon.contains(event.target)) {
+                        userSettings.classList.remove('open');
+                    }
+                });
+            });
+        
+            // Cargar los modelos del usuario al iniciar la página
+            loadUserModels();
+        });
+    </script>
+
+</body>
+</html>
