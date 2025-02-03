@@ -1,9 +1,18 @@
-# Ignore environment files (if used)
-.env
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
 
-# Ignore editor configuration files (optional)
-.idea/
-.vscode/
+# Output files
+*.out
+*.log
 
-# Ignore virtual environment folder
-venv/
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# Build directories
+bin/
