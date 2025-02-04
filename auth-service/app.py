@@ -49,19 +49,23 @@ def hash_password(password):
 def login():
     data = request.get_json()
 
-    # Search for the user by username or email
+    # Buscar al usuario por username o email
     user = User.query.filter(
         (User.username == data['username']) | (User.email == data['username'])
     ).first()
 
     if user:
-        # Verify the password
+        # Verificar la contraseña
         hashed_input_password = hash_password(data['password'])
 
         if hashed_input_password == user.password:
-            # Generate the JWT token
+            # Generar el token JWT
             token = jwt.encode(
-                {'user_id': str(user.id), 'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)},
+                {
+                    'user_id': str(user.id),
+                    'username': user.username,
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+                },
                 app.config['SECRET_KEY'],
                 algorithm='HS256'
             )
@@ -94,4 +98,4 @@ def profile():
         return jsonify({"message": "Invalid token"}), 401
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5001)

@@ -1,154 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="css/login.css">
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <nav>
-        <div class="navbar">
-            <div class="logo">
-                <a href="index.html">3D Model Shop</a>
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="navbar">
+      <div class="logo">
+        <a href="index.html">3D Model Shop</a>
+      </div>
+      <div class="nav-links">
+        <ul>
+          <li><a href="catalog.html" class="nav-link" id="catalogLink">Add</a></li>
+          <!-- When not logged in, show Course... -->
+          <li id="course-status-link"></li>
+          <!-- When not logged in, show login/register -->
+          <li id="login-register-link">
+            <span id="course-status">Course...</span> / <a href="register.html">Register</a>
+          </li>
+          <!-- When logged in, show user settings (hidden by default) -->
+          <li id="user-settings" style="display: none;">
+            <span id="settings-icon">&#9881;</span>
+            <div id="settings-dropdown" class="dropdown">
+              <a href="profile.html">Profile</a>
+              <a href="#" id="logout-link">Logout</a>
             </div>
-            <div class="nav-links">
-                <ul>
-                    <li><a href="catalog.html" class="nav-link" id="catalogLink">Add</a></li>
-                    
-                    <!-- When not logged in, show Course... -->
-                    <li id="course-status-link">
-                    </li>
-                    
-                    <!-- When not logged in, show login/register -->
-                    <li id="login-register-link">
-                        <span id="course-status">Course...</span> / <a href="register.html">Register</a>
-                    </li>
-                    
-                    <!-- When logged in, show user settings (hidden by default) -->
-                    <li id="user-settings" style="display: none;">
-                        <span id="settings-icon">&#9881;</span> <!-- Gear icon -->
-                        <div id="settings-dropdown" class="dropdown">
-                            <a href="profile.html">Profile</a>
-                            <a href="#" id="logout-link">Logout</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="form-container">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <label for="username">Username or Email:</label>
-            <input type="text" id="username" required><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" required><br>
-            <button type="submit">Login</button>
-        </form>
-        <p>Don't have an account? <a href="register.html">Register here</a></p>
+          </li>
+        </ul>
+      </div>
     </div>
+  </nav>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 3D Model Shop. All rights reserved.</p>
-    </footer>
+  <div class="form-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label for="username">Username or Email:</label>
+      <input type="text" id="username" required><br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" required><br>
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="register.html">Register here</a></p>
+  </div>
 
-    <script>
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 3D Model Shop. All rights reserved.</p>
+  </footer>
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const links = document.querySelectorAll('.nav-link');
-            const currentPage = window.location.pathname.split('/').pop(); // Get the current page name
+  <script src="config.js"></script>
 
-            links.forEach(link => {
-                if (link.href.includes(currentPage)) {
-                    link.classList.add('active');  // Add the 'active' class to the corresponding link
-                } else {
-                    link.classList.remove('active');  // Remove the 'active' class from other links
-                }
-            });
+  <script>
+    // Configurar la navegación activa
+    document.addEventListener('DOMContentLoaded', function() {
+      const links = document.querySelectorAll('.nav-link');
+      const currentPage = window.location.pathname.split('/').pop();
+      links.forEach(link => {
+        if (link.href.includes(currentPage)) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    });
+
+    // Definir las URLs de la API según el entorno
+    const apiUrl = window.location.hostname === 'localhost'
+      ? 'http://localhost:5001'
+      : 'http://auth-service:5001';
+
+    const sessionApiUrl = window.config.sessionApiUrl;
+
+    // Manejo del envío del formulario de login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        // Realizar la solicitud de login
+        const response = await fetch(`${apiUrl}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
         });
 
+        const data = await response.json();
+        console.log("Respuesta JSON del servidor:", data);
 
-            // Handling login form submission
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
+        if (response.ok) {
+          // Guardar token y username en localStorage
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('username', username);
 
-                try {
-                    const response = await fetch('http://localhost:5001/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, password })
-                    });
+          // Verificar si ya existe una sesión para el usuario
+          const sessionResponse = await fetch(`${sessionApiUrl}/api/sessions/${username}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${data.token}`
+            }
+          });
 
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        // Save the token in localStorage
-                        localStorage.setItem('token', data.token);
-                        localStorage.setItem('username', username);
-
-                        // Verify if a session already exists
-                        const sessionResponse = await fetch('http://localhost:5004/api/sessions/' + username, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${data.token}` // Send token in the header
-                            }
-                        });
-
-                        // If a session exists, update it
-                        if (sessionResponse.ok) {
-                            const sessionData = await sessionResponse.json();
-                            const updateSessionResponse = await fetch('http://localhost:5004/api/sessions/' + username, {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${data.token}` // Send token in the header
-                                },
-                                body: JSON.stringify({
-                                    data: {} // Data you want to update in the session
-                                })
-                            });
-
-                            if (updateSessionResponse.ok) {
-                                window.location.href = 'index.html'; // Redirect to the main page
-                            } else {
-                                const sessionError = await updateSessionResponse.json();
-                                alert('Error updating session: ' + sessionError.message);
-                            }
-                        } else if (sessionResponse.status === 404) {
-                            // If no session exists, create a new one
-                            const sessionCreationResponse = await fetch('http://localhost:5004/api/sessions', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${data.token}` // Send token in the header
-                                },
-                                body: JSON.stringify({
-                                    data: {} // Additional session data you want to add
-                                })
-                            });
-
-                            if (sessionCreationResponse.ok) {
-                                window.location.href = 'index.html'; // Redirect to the main page
-                            } else {
-                                const sessionError = await sessionCreationResponse.json();
-                                alert('Error creating session: ' + sessionError.message);
-                            }
-                        }
-                    } else {
-                        alert('Login failed: ' + data.message);
-                    }
-                } catch (error) {
-                    alert('Error during login: ' + error);
-                }
+          if (sessionResponse.ok) {
+            // Actualizar sesión existente
+            const updateSessionResponse = await fetch(`${sessionApiUrl}/api/sessions/${username}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${data.token}`
+              },
+              body: JSON.stringify({ data: {} })
             });
-    </script>
+
+            if (updateSessionResponse.ok) {
+              window.location.href = 'index.html';
+            } else {
+              const sessionError = await updateSessionResponse.json();
+              alert('Error updating session: ' + sessionError.message);
+            }
+          } else if (sessionResponse.status === 404) {
+            // Crear una nueva sesión si no existe
+            const sessionCreationResponse = await fetch(`${sessionApiUrl}/api/sessions`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${data.token}`
+              },
+              body: JSON.stringify({ data: {} })
+            });
+
+            if (sessionCreationResponse.ok) {
+              window.location.href = 'index.html';
+            } else {
+              const sessionError = await sessionCreationResponse.json();
+              alert('Error creating session: ' + sessionError.message);
+            }
+          }
+        } else {
+          alert('Login failed: ' + data.message);
+        }
+      } catch (error) {
+        alert('Error during login: ' + error);
+      }
+    });
+  </script>
 </body>
 </html>

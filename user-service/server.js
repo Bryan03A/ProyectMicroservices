@@ -127,7 +127,7 @@ app.get('/user/:id', async (req, res) => {
 });
 
 // Iniciar servidor
-app.listen(port, async () => {
+app.listen(port, '0.0.0.0', async () => {
     await createTable();
     console.log(`User-service is running on port ${port}`);
 });

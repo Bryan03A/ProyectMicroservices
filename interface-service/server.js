@@ -8,7 +8,7 @@ const port = 8080;
 
 // Configuración de CORS
 app.use(cors({
-    origin: 'http://localhost:8080',  // Esto permite peticiones desde el puerto 8080
+    origin: '*',  // Esto permite peticiones desde el puerto 8080
     methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Puedes ajustar los métodos según sea necesario
     allowedHeaders: ['Content-Type', 'Authorization'],  // Cabeceras permitidas
 }));
@@ -38,6 +38,6 @@ app.use(sessionRoutes);
 app.use(catalogRoutes);
 
 // Start server
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Graphical interface server running at http://localhost:${port}`);
 });

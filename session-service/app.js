@@ -19,7 +19,7 @@ const app = express();
 
 
 app.use(cors({
-    origin: 'http://localhost:8080',  // Permite solicitudes solo desde tu frontend
+    origin: '*',  // Permite solicitudes solo desde tu frontend
     credentials: true  // Permite enviar cookies y headers de autenticación
 }));
 
@@ -37,6 +37,6 @@ mongoose.connect(MONGO_URI, {
 .catch((err) => console.error('Error connecting to MongoDB:', err));
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Session Service running on port ${PORT}`);
 });

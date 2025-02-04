@@ -79,6 +79,8 @@
         <p>&copy; 2025 3D Model Shop. All rights reserved.</p>
     </footer>
 
+    <script src="config.js"></script>
+
     <script>
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -179,7 +181,7 @@
                 return;
             }
 
-            fetch('/models', {
+            fetch(config.catalogApiUrl + '/models', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,7 +208,7 @@
 
         // Function to load all models
         function loadModels() {
-            fetch('/models')
+            fetch(config.catalogApiUrl + '/models')
                 .then(response => response.json())
                 .then(data => {
                     if (data.models && data.models.length > 0) {
@@ -225,7 +227,7 @@
         function getModelDetails() {
             const modelName = document.getElementById('modelName').value;
 
-            fetch(`/models/${modelName}`)
+            fetch(`${config.catalogApiUrl}/models/${modelName}`)
                 .then(response => response.json())
                 .then(data => {
                     const modelDetails = document.getElementById('modelDetails');

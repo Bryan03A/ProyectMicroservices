@@ -1,11 +1,12 @@
 services:
   auth-service:
     image: bfury0329/auth-service
+    build: ./auth-service
     ports:
       - "5001:5001"
     environment:
-      - DATABASE_URL=postgresql://postgres:1997Zanahoria@database-1.cpexyh7ws48q.us-east-2.rds.amazonaws.com:5432/postgres
-      - SQLALCHEMY_TRACK_MODIFICATIONS=False
+      - DATABASE_URL=postgresql://postgres:1997Zanahoria@database-1.chwe8cu6g15j.us-east-2.rds.amazonaws.com:5432/postgres
+      - SQLALCHEMY_TRACK_MODIFICATIONS=true
       - SECRET_KEY=mysecretkey
     networks:
       microservices-network:
@@ -13,6 +14,7 @@ services:
 
   catalog-service:
     image: bfury0329/catalog-service
+    build: ./catalog-service
     ports:
       - "5003:5003"
     environment:
@@ -24,6 +26,7 @@ services:
 
   session-service:
     image: bfury0329/session-service
+    build: ./session-service
     ports:
       - "5004:5004"
     environment:
@@ -35,18 +38,25 @@ services:
 
   interface-service:
     image: bfury0329/interface-service
+    build: ./interface-service
     ports:
       - "8080:8080"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - CATALOG_SERVICE_URL=http://catalog-service:5003
+      - SESSION_SERVICE_URL=http://session-service:5004
+      - USER_SERVICE_URL=http://user-service:5002
     networks:
       microservices-network:
         ipv4_address: 192.168.100.5
 
   user-service:
     image: bfury0329/user-service
+    build: ./user-service
     ports:
       - "5002:5002"
     environment:
-      - POSTGRESQL_HOST=database-1.cpexyh7ws48q.us-east-2.rds.amazonaws.com
+      - POSTGRESQL_HOST=database-1.chwe8cu6g15j.us-east-2.rds.amazonaws.com
       - POSTGRESQL_PORT=5432
       - POSTGRESQL_DATABASE=postgres
       - POSTGRESQL_USER=postgres

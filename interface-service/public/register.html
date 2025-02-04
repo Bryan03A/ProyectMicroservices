@@ -69,6 +69,12 @@
     </footer>
 
     <script>
+        // Definir la URL dependiendo del entorno
+        const apiUrl = window.location.hostname === 'localhost'
+            ? 'http://localhost:8080/register'
+            : 'http://interface-service:8080/register';
+
+
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const newUsername = document.getElementById('newUsername').value;
@@ -80,7 +86,7 @@
             const city = document.getElementById('city').value;
 
             try {
-                const response = await fetch('http://localhost:8080/register', {
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
