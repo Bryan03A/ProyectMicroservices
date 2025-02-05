@@ -1,0 +1,44 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - test  # Change this if you use a different branch, for example, "main"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up SSH with Deploy Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_GITHUB_KEY }}" > ~/.ssh/github-action-key
+        chmod 600 ~/.ssh/github-action-key
+        echo "Host github.com" >> ~/.ssh/config
+        echo "  IdentityFile ~/.ssh/github-action-key" >> ~/.ssh/config
+        echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+        echo "  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+
+    - name: Add EC2 host to known hosts
+      run: |
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to EC2 via SSH
+      run: |
+        ssh -i ~/.ssh/github-action-key ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+          # Navigate to the folder where the project is located
+          cd /home/ec2-user/ProyectMicroservices
+
+          # Get the latest changes from the 'test' branch
+          git pull origin test
+
+          # Stop and remove previous containers
+          docker-compose down
+
+          # Build and bring up the containers
+          docker-compose up -d --build
+        EOF
