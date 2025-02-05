@@ -7,7 +7,7 @@ services:
     ports:
       - "5001:5001"
     environment:
-      - DATABASE_URL=postgresql://postgres:1997Zanahoria@database-1.cl1ivajgoftg.us-west-2.rds.amazonaws.com:5432/postgres
+      - DATABASE_URL=postgresql://postgres:1997Zanahoria@database-1.c2o8kga0ywbt.us-east-1.rds.amazonaws.com:5432/postgres
       - SQLALCHEMY_TRACK_MODIFICATIONS=true
       - SECRET_KEY=mysecretkey
     networks:
@@ -54,7 +54,7 @@ services:
     ports:
       - "5002:5002"
     environment:
-      - POSTGRESQL_HOST=database-1.cl1ivajgoftg.us-west-2.rds.amazonaws.com
+      - POSTGRESQL_HOST=database-1.c2o8kga0ywbt.us-east-1.rds.amazonaws.com
       - POSTGRESQL_PORT=5432
       - POSTGRESQL_DATABASE=postgres
       - POSTGRESQL_USER=postgres
