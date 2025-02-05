@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 
 const router = express.Router();
-const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://54.214.66.77:5001';
+const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://3.82.92.84:5001';
 
 // Route to handle user login
 router.post('/login', async (req, res) => {

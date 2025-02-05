@@ -39,5 +39,5 @@ app.use(catalogRoutes);
 
 // Start server
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Graphical interface server running at http://52.12.67.171:${port}`);
+    console.log(`Graphical interface server running at http://3.82.92.84:${port}`);
 });

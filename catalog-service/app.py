@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Enable CORS to allow requests from localhost:8080
-CORS(app, origins=["http://52.12.67.171:8080"], supports_credentials=True)
+CORS(app, origins=["http://3.82.92.84:8080"], supports_credentials=True)
 
 # MongoDB Configuration
 MONGO_URI = os.getenv("MONGO_URI")
