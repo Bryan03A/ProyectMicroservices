@@ -65,9 +65,9 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "80:80"  # Exponer el puerto 80
+      - "80:80" 
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf  # Montar la configuración personalizada de NGINX
+      - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - auth-service
       - catalog-service
