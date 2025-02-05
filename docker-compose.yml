@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   auth-service:
     image: bfury0329/auth-service
@@ -9,8 +11,7 @@ services:
       - SQLALCHEMY_TRACK_MODIFICATIONS=true
       - SECRET_KEY=mysecretkey
     networks:
-      microservices-network:
-        ipv4_address: 192.168.100.2
+      - microservices-network
 
   catalog-service:
     image: bfury0329/catalog-service
@@ -21,8 +22,7 @@ services:
       - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
       - SECRET_KEY=mysecretkey
     networks:
-      microservices-network:
-        ipv4_address: 192.168.100.3
+      - microservices-network
 
   session-service:
     image: bfury0329/session-service
@@ -33,8 +33,7 @@ services:
       - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
       - PORT=5004
     networks:
-      microservices-network:
-        ipv4_address: 192.168.100.4
+      - microservices-network
 
   interface-service:
     image: bfury0329/interface-service
@@ -47,8 +46,7 @@ services:
       - SESSION_SERVICE_URL=http://session-service:5004
       - USER_SERVICE_URL=http://user-service:5002
     networks:
-      microservices-network:
-        ipv4_address: 192.168.100.5
+      - microservices-network
 
   user-service:
     image: bfury0329/user-service
@@ -62,13 +60,23 @@ services:
       - POSTGRESQL_USER=postgres
       - POSTGRESQL_PASSWORD=1997Zanahoria
     networks:
-      microservices-network:
-        ipv4_address: 192.168.100.6
+      - microservices-network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"  # Exponer el puerto 80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Montar la configuración personalizada de NGINX
+    depends_on:
+      - auth-service
+      - catalog-service
+      - session-service
+      - interface-service
+      - user-service
+    networks:
+      - microservices-network
 
 networks:
   microservices-network:
     driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: "192.168.100.0/24"

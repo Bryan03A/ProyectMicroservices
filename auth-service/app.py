@@ -14,7 +14,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # Enable CORS to allow requests from localhost:8080
-CORS(app, origins=["http://localhost:8080"], supports_credentials=True)
+CORS(app)
 
 # Configurar la conexión a PostgreSQL (AWS RDS)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
