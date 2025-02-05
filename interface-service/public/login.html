@@ -57,7 +57,7 @@
   <script src="config.js"></script>
 
   <script>
-    // Configurar la navegación activa
+    // Setting up active navigation
     document.addEventListener('DOMContentLoaded', function() {
       const links = document.querySelectorAll('.nav-link');
       const currentPage = window.location.pathname.split('/').pop();
@@ -70,21 +70,21 @@
       });
     });
 
-    // Definir las URLs de la API según el entorno
+    // Define API URLs based on the environment
     const apiUrl = window.location.hostname === 'localhost'
       ? 'http://54.214.66.77:5001'
       : 'http://54.214.66.77:5001';
 
     const sessionApiUrl = window.config.sessionApiUrl;
 
-    // Manejo del envío del formulario de login
+    // Handling login form submission
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
 
       try {
-        // Realizar la solicitud de login
+        // Make the login request
         const response = await fetch(`${apiUrl}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -95,11 +95,11 @@
         console.log("Respuesta JSON del servidor:", data);
 
         if (response.ok) {
-          // Guardar token y username en localStorage
+          // Save token and username in localStorage
           localStorage.setItem('token', data.token);
           localStorage.setItem('username', username);
 
-          // Verificar si ya existe una sesión para el usuario
+          // Check if a session already exists for the user
           const sessionResponse = await fetch(`${sessionApiUrl}/api/sessions/${username}`, {
             method: 'GET',
             headers: {
@@ -108,7 +108,7 @@
           });
 
           if (sessionResponse.ok) {
-            // Actualizar sesión existente
+            // Update existing session
             const updateSessionResponse = await fetch(`${sessionApiUrl}/api/sessions/${username}`, {
               method: 'PUT',
               headers: {
@@ -125,7 +125,7 @@
               alert('Error updating session: ' + sessionError.message);
             }
           } else if (sessionResponse.status === 404) {
-            // Crear una nueva sesión si no existe
+            // Create a new session if it does not exist
             const sessionCreationResponse = await fetch(`${sessionApiUrl}/api/sessions`, {
               method: 'POST',
               headers: {

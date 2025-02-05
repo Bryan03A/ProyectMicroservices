@@ -12,15 +12,15 @@ const PORT = process.env.PORT || 5004;
 
 if (!MONGO_URI) {
     console.error("❌ ERROR: MONGO_URI no está definido. Verifica tu archivo .env.");
-    process.exit(1); // Detiene la ejecución si falta la conexión
+    process.exit(1); // Stops execution if connection is lost
 }
 
 const app = express();
 
 
 app.use(cors({
-    origin: '*',  // Permite solicitudes solo desde tu frontend
-    credentials: true  // Permite enviar cookies y headers de autenticación
+    origin: '*',  // Allow requests only from your frontend
+    credentials: true  // Allows sending cookies and authentication headers
 }));
 
 // Middleware

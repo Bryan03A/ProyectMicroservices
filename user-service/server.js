@@ -4,17 +4,17 @@ const express = require('express');
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');  
-const cors = require('cors');  // Importar CORS
+const cors = require('cors');  // Import CORS
 
 const app = express();
 const port = 5002;
 
-// Middleware para procesar JSON y habilitar CORS
-app.use(express.json());  // <-- Permite recibir JSON en req.body
-app.use(express.urlencoded({ extended: true }));  // <-- Para datos de formularios
-app.use(cors());  // <-- Permite solicitudes desde otros dominios
+// Middleware to process JSON and enable CORS
+app.use(express.json());  // <-- Allows receiving JSON in req.body
+app.use(express.urlencoded({ extended: true }));  // <-- For form data
+app.use(cors());  // <-- Allows requests from other domains
 
-// Configurar la conexión a PostgreSQL en AWS RDS
+// Configure PostgreSQL connection on AWS RDS
 const pool = new Pool({
   host: process.env.POSTGRESQL_HOST,
   port: process.env.POSTGRESQL_PORT,
@@ -26,21 +26,21 @@ const pool = new Pool({
   }
 });
 
-// Probar la conexión
+// Test the connection
 async function testConnection() {
   try {
     const client = await pool.connect();
     const result = await client.query('SELECT NOW()');
-    console.log('Conectado a PostgreSQL en AWS RDS:', result.rows[0]);
+    console.log('Connected to PostgreSQL on AWS RDS:', result.rows[0]);
     client.release();
   } catch (error) {
-    console.error('Error de conexión:', error);
+    console.error('Connection error:', error);
   }
 }
 
 testConnection();
 
-// Crear tabla si no existe
+// Create table if it does not exist
 async function createTable() {
   const query = `
       CREATE TABLE IF NOT EXISTS "user" (
@@ -62,7 +62,7 @@ async function createTable() {
   }
 }
 
-// Función para hashear contraseñas
+// Function to hash passwords
 const hashPassword = (password) => {
   return new Promise((resolve, reject) => {
       const salt = 'salt';
@@ -76,9 +76,9 @@ const hashPassword = (password) => {
   });
 };
 
-// **RUTA PARA REGISTRAR UN USUARIO**
+// **ROUTE TO REGISTER A USER**
 app.post('/register', async (req, res) => {
-  console.log('Body recibido:', req.body);  // <-- Verifica que req.body no sea undefined
+  console.log('Received body:', req.body);  // <-- Verifies that req.body is not undefined
 
   const { username, password, first_name, last_name, dni, email, city } = req.body;
 
@@ -102,7 +102,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// **RUTA PARA OBTENER UN USUARIO POR ID**
+// **ROUTE TO GET A USER BY ID**
 app.get('/user/:id', async (req, res) => {
     const { id } = req.params;
   
@@ -126,7 +126,7 @@ app.get('/user/:id', async (req, res) => {
     }
 });
 
-// Iniciar servidor
+// Start server
 app.listen(port, '0.0.0.0', async () => {
     await createTable();
     console.log(`User-service is running on port ${port}`);
