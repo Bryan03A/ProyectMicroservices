@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 
 const router = express.Router();
-const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://52.12.67.171:5002';
+const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://54.214.66.77:5002';
 
 // Route to handle new user registration
 router.post('/register', async (req, res) => {
