@@ -7,7 +7,7 @@ services:
     ports:
       - "5001:5001"
     environment:
-      - DATABASE_URL=postgresql://postgres.imfqyzgimtercyyqeqof:1997Zanahoria@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+      - DATABASE_URL=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
       - SQLALCHEMY_TRACK_MODIFICATIONS=true
       - SECRET_KEY=mysecretkey
     networks:
@@ -58,7 +58,7 @@ services:
       - POSTGRESQL_PORT=6543
       - POSTGRESQL_DATABASE=postgres
       - POSTGRESQL_USER=postgres.imfqyzgimtercyyqeqof
-      - POSTGRESQL_PASSWORD=1997Zanahoria
+      - POSTGRESQL_PASSWORD=1997Guallaba
     networks:
       - microservices-network
 
