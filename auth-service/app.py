@@ -15,7 +15,7 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 
-# Enable CORS to allow requests from specific frontend domain (localhost:8080 in this case 1)
+# Enable CORS to allow requests from specific frontend domain (localhost:8080 in this case)
 CORS(app, origins=["http://98.84.113.50:8080"], supports_credentials=True)
 
 # Configuring the connection to PostgreSQL (AWS RDS)
