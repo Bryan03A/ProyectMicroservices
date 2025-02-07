@@ -57,7 +57,7 @@ services:
       - POSTGRESQL_HOST=aws-0-us-west-1.pooler.supabase.com
       - POSTGRESQL_PORT=5432
       - POSTGRESQL_DATABASE=postgres
-      - POSTGRESQL_USER=postgres
+      - POSTGRESQL_USER=postgres.imfqyzgimtercyyqeqof
       - POSTGRESQL_PASSWORD=1997Zanahoria
     networks:
       - microservices-network
