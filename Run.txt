@@ -11,24 +11,13 @@
         npm install
     node server.js 
 
-<<<<<<< HEAD
-4. 3D Models Catalog
-=======
 3. 3D Models Catalog
->>>>>>> b6eb336 (test)
     cd catalog-service
         python -m venv venv
         venv\Scripts\activate
         pip install -r requirements.txt
     python app.py
 
-<<<<<<< HEAD
-5. Save session
-    cd session-service
-        npm init -y
-        npm install
-    node app.js 
-=======
 4. Save session
     cd session-service
         npm init -y
@@ -39,23 +28,17 @@
     cd search-service
         go run main.go
 
->>>>>>> b6eb336 (test)
     
 x. Interface (Node.js, Express, )
     cd interface-service
         npm init -y
         npm install
     node server.js
-<<<<<<< HEAD
-=======
 
->>>>>>> b6eb336 (test)
     
 DataBase
 https://supabase.com/           (PostgreSQL) (kTGprwMyyiw3ltfv)
 https://cloud.mongodb.com/       (MongoDB)  (1997999 MicroserviceDev)
-<<<<<<< HEAD
-=======
 
 
 curl -X DELETE "http://localhost:9200/models"
@@ -77,4 +60,3 @@ LRANGE search-history 0 9
 
 FLUSHDB
 
->>>>>>> b6eb336 (test)
