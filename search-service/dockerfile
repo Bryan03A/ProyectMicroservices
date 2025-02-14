@@ -1,0 +1,32 @@
+# Etapa 1: Construcción del contenedor
+FROM golang:1.18-alpine AS build
+
+# Setear el directorio de trabajo
+WORKDIR /app
+
+# Copiar los archivos del servicio de búsqueda
+COPY . .
+
+# Instalar las dependencias necesarias
+RUN go mod tidy
+
+# Compilar la aplicación
+RUN go build -o search-service main.go
+
+# Etapa 2: Crear una imagen más pequeña para ejecutar el contenedor
+FROM alpine:latest
+
+# Setear el directorio de trabajo
+WORKDIR /app
+
+# Copiar el binario compilado desde la etapa de construcción
+COPY --from=build /app/search-service .
+
+# Copiar el archivo de configuración (si es necesario)
+COPY --from=build /app/config/config.go /app/config/
+
+# Exponer el puerto en el que la aplicación escuchará (ajustar si es necesario)
+EXPOSE 5005
+
+# Comando para ejecutar el servicio de búsqueda
+CMD ["./search-service"]
