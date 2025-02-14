@@ -62,4 +62,4 @@ LRANGE search-history 0 9
 
 FLUSHDB
 
-docker run --name postgres -e POSTGRES_PASSWORD=1997Zanahoria -d -p 5432:5432 postgres:latest
+docker run --name postgres -e POSTGRES_PASSWORD=1997Zanahoria -d -p 5432:5432 postgres:latest.
