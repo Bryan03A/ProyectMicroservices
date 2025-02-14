@@ -5,10 +5,7 @@ from functools import wraps
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-<<<<<<< HEAD
-=======
 import requests 
->>>>>>> b6eb336 (test)
 
 load_dotenv()
 
@@ -16,11 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Enable CORS to allow requests from localhost:8080
-<<<<<<< HEAD
-CORS(app, origins=["http://3.82.92.84:8080"], supports_credentials=True)
-=======
 CORS(app, origins=["http://localhost:8080"], supports_credentials=True)
->>>>>>> b6eb336 (test)
 
 # MongoDB Configuration
 MONGO_URI = os.getenv("MONGO_URI")
@@ -31,12 +24,9 @@ models_collection = db["models"]  # Collection to store 3D models
 # Secret key for JWT
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-<<<<<<< HEAD
-=======
 # Elasticsearch Configuration
 ELASTICSEARCH_URL = "http://localhost:9200"
 
->>>>>>> b6eb336 (test)
 # Function to decode JWT token and get user_id
 def get_user_info_from_token():
     token = request.headers.get('Authorization')
@@ -71,8 +61,6 @@ def check_model_owner(model_id):
 def home():
     return jsonify({"message": "Welcome to the Catalog Service!"})
 
-<<<<<<< HEAD
-=======
 def index_model_in_elasticsearch(model_data, model_id):
     """ Envía el modelo a Elasticsearch """
     es_data = {
@@ -118,7 +106,6 @@ def update_in_elasticsearch(model_id, updated_data):
     except requests.exceptions.RequestException as e:
         print(f"❌ Error de conexión a Elasticsearch: {e}")
 
->>>>>>> b6eb336 (test)
 @app.route("/models", methods=["POST"])
 def add_model():
     try:
@@ -134,9 +121,6 @@ def add_model():
         
         model_data['created_by'] = user_name  # Usamos el nombre del usuario
         result = models_collection.insert_one(model_data)
-<<<<<<< HEAD
-        return jsonify({"message": "Model added successfully", "model_id": str(result.inserted_id)}), 201
-=======
         model_id = str(result.inserted_id)
 
         # Llamada a Elasticsearch para indexar el modelo después de insertarlo en MongoDB
@@ -144,7 +128,6 @@ def add_model():
 
         return jsonify({"message": "Model added successfully", "model_id": model_id}), 201
 
->>>>>>> b6eb336 (test)
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
@@ -191,10 +174,7 @@ def delete_model(model_name):
             return jsonify({"error": "Unauthorized"}), 403  # Only owner can delete
         result = models_collection.delete_one({"name": model_name})
         if result.deleted_count > 0:
-<<<<<<< HEAD
-=======
             delete_from_elasticsearch(str(model['_id']))
->>>>>>> b6eb336 (test)
             return jsonify({"message": "Model deleted successfully"}), 200
         else:
             return jsonify({"error": "Error deleting model"}), 500
@@ -213,10 +193,7 @@ def update_model(model_name):
         updated_data = request.json
         result = models_collection.update_one({"name": model_name}, {"$set": updated_data})
         if result.modified_count > 0:
-<<<<<<< HEAD
-=======
             update_in_elasticsearch(str(model['_id']), updated_data)
->>>>>>> b6eb336 (test)
             return jsonify({"message": "Model updated successfully"}), 200
         else:
             return jsonify({"error": "Error updating model"}), 500
