@@ -19,6 +19,11 @@ const userRoutes = require('./routes/user-service');
 const authRoutes = require('./routes/auth-service');
 const sessionRoutes = require('./routes/session-service');
 const catalogRoutes = require('./routes/catalog-service');
+<<<<<<< HEAD
+=======
+const searchService = require("./routes/search-service");
+const redisService = require("./routes/redis-service");
+>>>>>>> b6eb336 (test)
 
 // Serving static files (such as index.html)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -37,7 +42,19 @@ app.use(sessionRoutes);
 // Use the catalog routes
 app.use(catalogRoutes);
 
+<<<<<<< HEAD
 // Start server
 app.listen(port, '0.0.0.0', () => {
     console.log(`Graphical interface server running at http://3.82.92.84:${port}`);
+=======
+// Ruta para manejar las búsquedas
+app.use('/search', require('./routes/search-service'));
+
+app.use("/search", searchService);
+app.use("/redis", redisService);
+
+// Start server
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Graphical interface server running at http://localhost:${port}`);
+>>>>>>> b6eb336 (test)
 });

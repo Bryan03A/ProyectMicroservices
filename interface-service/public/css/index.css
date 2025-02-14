@@ -129,4 +129,65 @@ h2 {
     h2 {
         text-align: center;
     }
+<<<<<<< HEAD
+=======
+}
+
+.search-bar {
+    display: flex;                 /* Usamos flexbox para alineación en línea */
+    flex-direction: row;           /* Disposición horizontal de los elementos */
+    align-items: center;           /* Alineación vertical centrada */
+    justify-content: space-between; /* Espacio igual entre los elementos */
+    gap: 20px;                     /* Espacio entre los elementos */
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    width: 80%;
+}
+
+.search-bar input,
+.search-bar select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;                  /* Fijo el ancho de los inputs y selects */
+}
+
+.search-bar button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.search-bar button:hover {
+    background-color: #0056b3;
+}
+
+.search-options {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.catalog-item {
+    padding: 15px;
+    border-radius: 5px;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 250px;
+>>>>>>> b6eb336 (test)
 }

@@ -20,5 +20,10 @@
     },
     "keywords": [],
     "author": "",
+<<<<<<< HEAD
     "license": "ISC"
+=======
+    "license": "ISC",
+    "devDependencies": {}
+>>>>>>> b6eb336 (test)
 }

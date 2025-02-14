@@ -45,6 +45,10 @@ services:
       - CATALOG_SERVICE_URL=http://catalog-service:5003
       - SESSION_SERVICE_URL=http://session-service:5004
       - USER_SERVICE_URL=http://user-service:5002
+<<<<<<< HEAD
+=======
+      - SEARCH_SERVICE_URL=http://search-service:5005  
+>>>>>>> b6eb336 (test)
     networks:
       - microservices-network
 
@@ -62,6 +66,20 @@ services:
     networks:
       - microservices-network
 
+<<<<<<< HEAD
+=======
+  search-service:
+    image: bfury0329/search-service
+    build: ./search-service
+    ports:
+      - "5005:5005"
+    environment:
+      - DATABASE_URL=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+      - SECRET_KEY=mysecretkey
+    networks:
+      - microservices-network
+
+>>>>>>> b6eb336 (test)
   nginx:
     image: nginx:latest
     ports:
@@ -74,6 +92,10 @@ services:
       - session-service
       - interface-service
       - user-service
+<<<<<<< HEAD
+=======
+      - search-service  
+>>>>>>> b6eb336 (test)
     networks:
       - microservices-network
 

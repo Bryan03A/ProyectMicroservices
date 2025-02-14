@@ -11,25 +11,70 @@
         npm install
     node server.js 
 
+<<<<<<< HEAD
 4. 3D Models Catalog
+=======
+3. 3D Models Catalog
+>>>>>>> b6eb336 (test)
     cd catalog-service
         python -m venv venv
         venv\Scripts\activate
         pip install -r requirements.txt
     python app.py
 
+<<<<<<< HEAD
 5. Save session
     cd session-service
         npm init -y
         npm install
     node app.js 
+=======
+4. Save session
+    cd session-service
+        npm init -y
+        npm install
+    node app.js
+
+5. Search and filter
+    cd search-service
+        go run main.go
+
+>>>>>>> b6eb336 (test)
     
 x. Interface (Node.js, Express, )
     cd interface-service
         npm init -y
         npm install
     node server.js
+<<<<<<< HEAD
+=======
+
+>>>>>>> b6eb336 (test)
     
 DataBase
 https://supabase.com/           (PostgreSQL) (kTGprwMyyiw3ltfv)
 https://cloud.mongodb.com/       (MongoDB)  (1997999 MicroserviceDev)
+<<<<<<< HEAD
+=======
+
+
+curl -X DELETE "http://localhost:9200/models"
+
+curl -X GET "http://localhost:9200/models/_search?pretty=true&q=*:*"
+
+docker start elasticsearch
+
+Redis docker:
+docker run --name redis-server -p 6379:6379 -d redis
+
+docker ps
+
+docker exec -it redis_container_name redis-cli
+
+KEYS *
+
+LRANGE search-history 0 9
+
+FLUSHDB
+
+>>>>>>> b6eb336 (test)

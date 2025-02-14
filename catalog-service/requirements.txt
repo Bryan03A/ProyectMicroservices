@@ -2,4 +2,9 @@ pymongo
 Flask
 python-dotenv
 flask-cors
+<<<<<<< HEAD
 PyJWT
+=======
+PyJWT
+requests
+>>>>>>> b6eb336 (test)

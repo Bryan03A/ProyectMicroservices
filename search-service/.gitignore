@@ -1,0 +1,41 @@
+# Archivos específicos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración del IDE o editor
+.idea/
+.vscode/
+
+# Archivos generados por Go
+/bin/
+/obj/
+
+# Dependencias de Go
+/vendor/
+
+# Archivos de configuración locales
+.env
+
+# Archivos de módulos Go
+go.sum
+go.mod
+
+# Archivos de compilación
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Archivos de configuración específicos
+config/config.go
+
+# Archivos generados al ejecutar el servicio
+*.log
+
+# Archivos de test
+*.test
+
+# Otros archivos temporales o de entorno
+*.bak
+*.swp

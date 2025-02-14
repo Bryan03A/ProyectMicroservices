@@ -2,7 +2,11 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
+<<<<<<< HEAD
 const SESSION_SERVICE_URL = process.env.SESSION_SERVICE_URL || 'http://98.84.113.50:5004';  // URL of your session-service
+=======
+const SESSION_SERVICE_URL = process.env.SESSION_SERVICE_URL || 'http://localhost:5004';  // URL of your session-service
+>>>>>>> b6eb336 (test)
 
 // Route to create a session
 router.post('/create-session', async (req, res) => {

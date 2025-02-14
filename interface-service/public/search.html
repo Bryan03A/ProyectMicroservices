@@ -1,0 +1,57 @@
+<body>
+  <h1>Buscador de Modelos 3D</h1>
+
+  <input type="text" id="searchQuery" placeholder="Buscar modelo...">
+  <input type="text" id="creatorFilter" placeholder="Filtrar por creador...">
+  
+  <label for="sortBy">Ordenar por:</label>
+  <select id="sortBy">
+    <option value="name">Nombre</option>
+    <option value="price">Precio</option>
+  </select>
+
+  <label for="order">Orden:</label>
+  <select id="order">
+    <option value="asc">Ascendente</option>
+    <option value="desc">Descendente</option>
+  </select>
+
+  <button onclick="searchModels()">Buscar</button>
+
+  <div id="results"></div>
+
+  <script>
+    async function searchModels() {
+      const query = document.getElementById('searchQuery').value;
+      const creator = document.getElementById('creatorFilter').value;
+      const sortBy = document.getElementById('sortBy').value;
+      const order = document.getElementById('order').value;
+      const resultsContainer = document.getElementById('results');
+      resultsContainer.innerHTML = '';
+
+      try {
+        const url = `/search?q=${encodeURIComponent(query)}&creator=${encodeURIComponent(creator)}&sort=${sortBy}&order=${order}`;
+        const response = await fetch(url);
+        const models = await response.json();
+
+        if (models.length > 0) {
+          models.forEach(model => {
+            const div = document.createElement('div');
+            div.classList.add('model-result');
+            div.innerHTML = `
+              <h3>${model._source.name}</h3>
+              <p>${model._source.description}</p>
+              <p><strong>Creado por:</strong> ${model._source.created_by}</p>
+              <p><strong>Precio:</strong> $${model._source.price}</p>
+            `;
+            resultsContainer.appendChild(div);
+          });
+        } else {
+          resultsContainer.innerHTML = '<p>No se encontraron modelos.</p>';
+        }
+      } catch (error) {
+        resultsContainer.innerHTML = '<p>Error al realizar la búsqueda.</p>';
+      }
+    }
+  </script>
+</body>

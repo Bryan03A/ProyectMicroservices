@@ -3,7 +3,11 @@ const axios = require('axios');
 const router = express.Router();
 
 // URL of the catalog-service microservice
+<<<<<<< HEAD
 const CATALOG_SERVICE_URL = process.env.CATALOG_SERVICE_URL || 'http://98.84.113.50:5003';
+=======
+const CATALOG_SERVICE_URL = process.env.CATALOG_SERVICE_URL || 'http://localhost:5003';
+>>>>>>> b6eb336 (test)
 
 // Helper function to handle requests to the microservice
 const fetchFromCatalogService = async (method, url, data = null, token = null) => {

@@ -38,11 +38,41 @@
         <p>Explore, customize, and print your favorite 3D models!</p>
     </div>
 
+<<<<<<< HEAD
     <!-- Catalog Section -->
     <div class="section">
         <h2>Catalog</h2>
         <div class="container" id="catalog-container">
             <!-- Catalog items will be dynamically inserted here -->
+=======
+    <!-- Search Bar Section -->
+    <div class="search-bar">
+        <input type="text" id="searchQuery" placeholder="Buscar modelo...">
+        <input type="text" id="creatorFilter" placeholder="Filtrar por creador...">
+
+        <div class="search-options">
+            <label for="sortBy">Ordenar por:</label>
+            <select id="sortBy">
+                <option value="name">Nombre</option>
+                <option value="price">Precio</option>
+            </select>
+
+            <label for="order">Orden:</label>
+            <select id="order">
+                <option value="asc">Ascendente</option>
+                <option value="desc">Descendente</option>
+            </select>
+        </div>
+
+        <button onclick="searchModels()">🔍 Buscar</button>
+    </div>
+
+    <!-- Recommended Models Section (Currently Empty) -->
+    <div class="section">
+        <h2>Recommended</h2>
+        <div class="container" id="recommended-container">
+            <!-- Recommended models will be inserted here later -->
+>>>>>>> b6eb336 (test)
         </div>
     </div>
 
@@ -54,11 +84,19 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Recommended Models Section (Currently Empty) -->
     <div class="section">
         <h2>Recommended</h2>
         <div class="container" id="recommended-container">
             <!-- Recommended models will be inserted here later -->
+=======
+    <!-- Catalog Section -->
+    <div class="section">
+        <h2>Catalog</h2>
+        <div class="container" id="catalog-container">
+            <!-- Catalog items will be dynamically inserted here -->
+>>>>>>> b6eb336 (test)
         </div>
     </div>
 
@@ -70,6 +108,7 @@
     <script src="config.js"></script>
 
     <script>
+<<<<<<< HEAD
         document.addEventListener('DOMContentLoaded', async () => {
             const container = document.querySelector('.container');
             try {
@@ -98,6 +137,146 @@
                 container.innerHTML = '<p>Failed to load models. Please try again later.</p>';
             }
         });
+=======
+    document.addEventListener('DOMContentLoaded', async () => {
+        const catalogContainer = document.querySelector('#catalog-container');
+        try {
+            // Cargar todos los modelos en el catálogo
+            const response = await fetch('/models');
+            const data = await response.json();
+
+            if (data.models && data.models.length > 0) {
+                catalogContainer.innerHTML = ''; // Limpiar contenido anterior
+                data.models.forEach(model => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.innerHTML = `
+                        <img src="${model.image_url}" alt="${model.name}">
+                        <h3>${model.name}</h3>
+                        <p><strong>Created by:</strong> ${model.created_by}</p>
+                        <p class="price">$${model.price}</p>
+                        <button onclick="window.location.href='/catalog.html'">View Details</button>
+                    `;
+                    catalogContainer.appendChild(card);
+                });
+            } else {
+                catalogContainer.innerHTML = '<p>No models available at the moment.</p>';
+            }
+        } catch (error) {
+            console.error('Error fetching models:', error);
+            catalogContainer.innerHTML = '<p>Failed to load models. Please try again later.</p>';
+        }
+    });
+
+
+    async function searchModels() {
+        const query = document.getElementById("searchQuery").value.trim();
+        const creator = document.getElementById("creatorFilter").value.trim();
+        const sortBy = document.getElementById("sortBy").value;
+        const order = document.getElementById("order").value;
+        const username = localStorage.getItem('username');  // Obtener el nombre de usuario desde el localStorage
+
+        if (!query || !username) return;
+
+        try {
+            // Realizar la búsqueda
+            const response = await fetch(`/search?q=${query}&creator=${creator}&sort=${sortBy}&order=${order}`);
+            const data = await response.json();
+
+            // Obtener el nombre del primer modelo en los resultados
+            const firstModelName = data.length > 0 ? data[0]._source.name : null;
+
+            // Guardar búsqueda en Redis con el nombre del primer modelo
+            await fetch("/redis/save-search", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query, creator, username, firstModelName })  // Enviar firstModelName
+            });
+
+            const catalogContainer = document.getElementById("recommended-container");
+            catalogContainer.innerHTML = ""; // Limpiar resultados anteriores
+
+            // Crear tarjetas para cada modelo en los resultados de búsqueda
+            data.forEach(model => {
+                const item = document.createElement("div");
+                item.classList.add("card");  // Usar la clase 'card' para el estilo de tarjeta
+
+                // Aquí añadimos el contenido dentro de cada tarjeta
+                item.innerHTML = `
+                    <img src="${model._source.image_url || 'default-image.jpg'}" alt="${model._source.name}">
+                    <h3>${model._source.name}</h3>
+                    <p>${model._source.description}</p>
+                    <p><strong>Created by:</strong> ${model._source.created_by}</p>
+                    <p class="price">$${model._source.price}</p>
+                    <button onclick="window.location.href='/catalog.html'">View Details</button>
+                `;
+
+                // Añadir la tarjeta al contenedor de recomendados
+                catalogContainer.appendChild(item);
+            });
+        } catch (error) {
+            console.error("Error fetching search results:", error);
+        }
+    }
+
+    async function fetchRecentSearches() {
+        const username = localStorage.getItem('username');  // Obtener el nombre de usuario desde el localStorage
+
+        if (!username) return;
+
+        try {
+            const response = await fetch(`/redis/recent-searches?username=${username}`);
+            const data = await response.json();
+
+            const recommendedContainer = document.getElementById("recommended-container");
+            recommendedContainer.innerHTML = "";  // Limpiar los resultados anteriores
+
+            // Llamamos a fetchModelByName para cada búsqueda reciente
+            for (let search of data) {
+                await fetchModelByName(search.firstModelName);  // Pasamos el nombre del primer modelo para obtenerlo
+            }
+        } catch (error) {
+            console.error("Error fetching recent searches:", error);
+        }
+    }
+
+    const existingModels = new Set();
+
+    async function fetchModelByName(firstModelName) {
+        try {
+            const response = await fetch(`http://localhost:5003/models/${firstModelName}`);
+            const data = await response.json();  // Obtenemos la respuesta
+
+            const model = data.model;  // Extraemos el modelo de la respuesta
+
+            if (model) {
+                const recommendedContainer = document.getElementById("recommended-container");
+
+                if (!existingModels.has(model.name)) {  // Si el modelo no ha sido agregado, lo mostramos
+                    existingModels.add(model.name);  // Añadimos el modelo al conjunto
+
+                    const modelCard = document.createElement("div");
+                    modelCard.classList.add("card");
+                    modelCard.innerHTML = `
+                        <img src="${model.image_url || 'default-image.jpg'}" alt="${model.name}">
+                        <h3>${model.name}</h3>
+                        <p>${model.description}</p>
+                        <p><strong>Created by:</strong> ${model.created_by}</p>
+                        <p class="price">$${model.price}</p>
+                        <button onclick="window.location.href='/catalog.html'">View Details</button>
+                    `;
+                    recommendedContainer.appendChild(modelCard);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching model by name:", error);
+        }
+    }
+
+    // Llamar a la función para cargar las búsquedas recientes cuando se carga la página
+    document.addEventListener('DOMContentLoaded', fetchRecentSearches);
+
+>>>>>>> b6eb336 (test)
 
         // Check if the user is logged in
         document.addEventListener('DOMContentLoaded', () => {
