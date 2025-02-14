@@ -41,6 +41,8 @@ https://supabase.com/           (PostgreSQL) (kTGprwMyyiw3ltfv)
 https://cloud.mongodb.com/       (MongoDB)  (1997999 MicroserviceDev)
 
 
+docker run --name elasticsearch -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.6.0
+
 curl -X DELETE "http://localhost:9200/models"
 
 curl -X GET "http://localhost:9200/models/_search?pretty=true&q=*:*"
@@ -60,3 +62,4 @@ LRANGE search-history 0 9
 
 FLUSHDB
 
+docker run --name postgres -e POSTGRES_PASSWORD=1997Zanahoria -d -p 5432:5432 postgres:latest
