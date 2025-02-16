@@ -13,14 +13,12 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],  // Allowed headers
 }));
 
-
 // Importing routes
 const userRoutes = require('./routes/user-service');
 const authRoutes = require('./routes/auth-service');
 const sessionRoutes = require('./routes/session-service');
 const catalogRoutes = require('./routes/catalog-service');
 const searchService = require("./routes/search-service");
-const redisService = require("./routes/redis-service");
 
 // Serving static files (such as index.html)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -41,9 +39,6 @@ app.use(catalogRoutes);
 
 // Ruta para manejar las búsquedas
 app.use('/search', require('./routes/search-service'));
-
-app.use("/search", searchService);
-app.use("/redis", redisService);
 
 // Start server
 app.listen(port, '0.0.0.0', () => {

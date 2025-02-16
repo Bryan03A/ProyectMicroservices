@@ -97,7 +97,8 @@ def profile():
             # Return user profile information (username and email)
             return jsonify({
                 "username": user.username,
-                "email": user.email
+                "email": user.email,
+                "user_id": user_id
             })
         else:
             return jsonify({"message": "User not found"}), 404  # If user is not found, return error

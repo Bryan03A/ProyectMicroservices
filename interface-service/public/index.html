@@ -109,7 +109,7 @@
                         <h3>${model.name}</h3>
                         <p><strong>Created by:</strong> ${model.created_by}</p>
                         <p class="price">$${model.price}</p>
-                        <button onclick="window.location.href='/catalog.html'">View Details</button>
+                        <button onclick="window.location.href='details.html?model_id=${model._id}'">View Details</button>
                     `;
                     catalogContainer.appendChild(card);
                 });
@@ -137,15 +137,18 @@
             const response = await fetch(`/search?q=${query}&creator=${creator}&sort=${sortBy}&order=${order}`);
             const data = await response.json();
 
-            // Obtener el nombre del primer modelo en los resultados
+            // Obtener el nombre y el id del primer modelo en los resultados
             const firstModelName = data.length > 0 ? data[0]._source.name : null;
+            const firstModelId = data.length > 0 ? data[0]._id : null;
 
             // Guardar búsqueda en Redis con el nombre del primer modelo
-            await fetch("/redis/save-search", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query, creator, username, firstModelName })  // Enviar firstModelName
-            });
+            if (firstModelName) {
+                await fetch("http://localhost:5006/save-search", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query, creator, username, firstModelName, firstModelId })  // Enviar firstModelId también
+                });
+            }
 
             const catalogContainer = document.getElementById("recommended-container");
             catalogContainer.innerHTML = ""; // Limpiar resultados anteriores
@@ -162,7 +165,7 @@
                     <p>${model._source.description}</p>
                     <p><strong>Created by:</strong> ${model._source.created_by}</p>
                     <p class="price">$${model._source.price}</p>
-                    <button onclick="window.location.href='/catalog.html'">View Details</button>
+                    <button onclick="window.location.href='details.html?model_id=${model._id}'">View Details</button>
                 `;
 
                 // Añadir la tarjeta al contenedor de recomendados
@@ -173,13 +176,14 @@
         }
     }
 
+
     async function fetchRecentSearches() {
         const username = localStorage.getItem('username');  // Obtener el nombre de usuario desde el localStorage
 
         if (!username) return;
 
         try {
-            const response = await fetch(`/redis/recent-searches?username=${username}`);
+            const response = await fetch("http://localhost:5006/recent-searches?username=" + username);
             const data = await response.json();
 
             const recommendedContainer = document.getElementById("recommended-container");
@@ -217,7 +221,7 @@
                         <p>${model.description}</p>
                         <p><strong>Created by:</strong> ${model.created_by}</p>
                         <p class="price">$${model.price}</p>
-                        <button onclick="window.location.href='/catalog.html'">View Details</button>
+                        <button onclick="window.location.href='details.html?model_id=${model._id}'">View Details</button>
                     `;
                     recommendedContainer.appendChild(modelCard);
                 }

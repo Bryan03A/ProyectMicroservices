@@ -74,6 +74,8 @@ services:
     networks:
       - microservices-network
 
+  
+
   nginx:
     image: nginx:latest
     ports:

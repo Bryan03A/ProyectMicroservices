@@ -1,0 +1,25 @@
+POST
+http://localhost:5001/login
+
+[
+    {
+        "username": "3DArtist",
+        "password": "12345",
+    },
+    {
+        "username": "DesignQueen",
+        "password": "12345",
+    },
+    {
+        "username": "Techie",
+        "password": "12345",
+    },
+    {
+        "username": "3DDesign",
+        "password": "12345",
+    },
+    {
+        "username": "ModelMaker",
+        "password": "12345",
+    }
+]

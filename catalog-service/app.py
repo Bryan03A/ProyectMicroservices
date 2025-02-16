@@ -5,7 +5,9 @@ from functools import wraps
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-import requests 
+import requests
+from bson import ObjectId
+
 
 load_dotenv()
 
@@ -136,7 +138,10 @@ def add_model():
 @app.route("/models", methods=["GET"])
 def get_models():
     try:
-        models = list(models_collection.find({}, {"_id": 0}))  # Exclude the _id field
+        # Convertir ObjectId a string antes de enviarlo
+        models = list(models_collection.find({}))
+        for model in models:
+            model["_id"] = str(model["_id"])  # Convertir ObjectId a string
         return jsonify({"models": models}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -154,14 +159,31 @@ def get_models_by_user(user_id):
 @app.route("/models/<string:model_name>", methods=["GET"])
 def get_model(model_name):
     try:
-        model = models_collection.find_one({"name": model_name}, {"_id": 0})
+        # Buscar el modelo por nombre, sin excluir el campo _id
+        model = models_collection.find_one({"name": model_name})
         if model:
+            # Convertir el ObjectId a string antes de enviarlo como JSON
+            model["_id"] = str(model["_id"])
             return jsonify({"model": model}), 200
         else:
             return jsonify({"error": "Model not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+    
+# Route to get a specific 3D model by its ID
+@app.route("/models/id/<string:model_id>", methods=["GET"])
+def get_model_by_id(model_id):
+    try:
+        # Buscar el modelo por _id (convertido a ObjectId)
+        model = models_collection.find_one({"_id": ObjectId(model_id)}, {"_id": 0})
+        if model:
+            model["model_id"] = model_id
+            return jsonify({"model": model}), 200
+        else:
+            return jsonify({"error": "Model not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 # Route to delete a 3D model by its name
 @app.route("/models/<string:model_name>", methods=["DELETE"])
 def delete_model(model_name):
@@ -181,6 +203,26 @@ def delete_model(model_name):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Route to delete a 3D model by its ID
+@app.route("/models/id/<string:model_id>", methods=["DELETE"])
+def delete_model_by_id(model_id):
+    try:
+        # Buscar el modelo por _id (convertido a ObjectId)
+        model = models_collection.find_one({"_id": ObjectId(model_id)})
+        if not model:
+            return jsonify({"error": "Model not found"}), 404
+        user_name = check_model_owner(model['_id'])  # Pasar _id, no user_id
+        if not user_name:
+            return jsonify({"error": "Unauthorized"}), 403  # Only owner can delete
+        result = models_collection.delete_one({"_id": ObjectId(model_id)})
+        if result.deleted_count > 0:
+            delete_from_elasticsearch(str(model['_id']))
+            return jsonify({"message": "Model deleted successfully"}), 200
+        else:
+            return jsonify({"error": "Error deleting model"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 # Route to update a 3D model by its name
 @app.route("/models/<string:model_name>", methods=["PUT"])
 def update_model(model_name):
@@ -199,6 +241,28 @@ def update_model(model_name):
             return jsonify({"error": "Error updating model"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Route to update a 3D model by its ID
+@app.route("/models/id/<string:model_id>", methods=["PUT"])
+def update_model_by_id(model_id):
+    try:
+        # Buscar el modelo por _id (convertido a ObjectId)
+        model = models_collection.find_one({"_id": ObjectId(model_id)})
+        if not model:
+            return jsonify({"error": "Model not found"}), 404
+        if not check_model_owner(model['_id']):
+            return jsonify({"error": "Unauthorized"}), 403  # Only owner can update
+        updated_data = request.json
+        result = models_collection.update_one({"_id": ObjectId(model_id)}, {"$set": updated_data})
+        if result.modified_count > 0:
+            update_in_elasticsearch(str(model['_id']), updated_data)
+            return jsonify({"message": "Model updated successfully"}), 200
+        else:
+            return jsonify({"error": "Error updating model"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
 
 if __name__ == "__main__":
     try:

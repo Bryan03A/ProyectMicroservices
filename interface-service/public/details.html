@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Details</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/details.css"> <!-- Include details.css -->
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="navbar">
+            <div class="logo">
+                <a href="index.html">3D Model Shop</a>
+            </div>
+            <div class="nav-links">
+                <ul>
+                    <li><a href="catalog.html" class="nav-link" id="catalogLink">Add</a></li>
+                    <!-- If logged in, show username and the settings icon, else show login/register -->
+                    <li id="login-register-link" style="display: none;"><a href="login.html">Login</a> / <a href="register.html">Register</a></li>
+                    <li id="user-settings" style="display: none;">
+                        <span id="username"></span> 
+                        <span id="settings-icon">&#9881;</span> <!-- Gear icon -->
+                        <div id="settings-dropdown" class="dropdown">
+                            <a href="profile.html">Profile</a>
+                            <a href="#" id="logout-link">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Model Details Section -->
+    <div class="model-details-container" id="model-details-container">
+        <!-- Model details will be inserted here -->
+    </div>
+
+    <!-- Customization Modal -->
+    <div id="customization-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <h3>Customize Your Model</h3>
+            <form id="customization-form">
+                <label for="filament_quality">Filament Quality</label>
+                <select id="filament_quality" name="filament_quality">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+                <br>
+
+                <label for="color">Color</label>
+                <select id="color" name="color">
+                    <option value="Red">Red</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Blue">Blue</option>
+                </select>
+                <br>
+
+                <label for="size">Size</label>
+                <select id="size" name="size">
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                </select>
+                <br>
+
+                <label for="shape_complexity">Shape Complexity</label>
+                <select id="shape_complexity" name="shape_complexity">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+                <br>
+
+                <label for="material_type">Material Type</label>
+                <select id="material_type" name="material_type">
+                    <option value="Standard">Standard</option>
+                    <option value="Premium">Premium</option>
+                    <option value="Luxury">Luxury</option>
+                </select>
+                <br>
+
+                <button type="submit">Submit Customization</button>
+            </form>
+            <p id="customization-error" style="color:red;"></p>
+            <p id="customization-success" style="color:green;"></p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 3D Model Shop. All rights reserved.</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+
+            const userSettings = document.getElementById('user-settings');
+            const settingsIcon = document.getElementById('settings-icon');
+            const settingsDropdown = document.getElementById('settings-dropdown');
+            const loginRegisterLink = document.getElementById('login-register-link');
+            const logoutLink = document.getElementById('logout-link');
+            
+            if (token && username) {
+                // Show user settings and username if logged in
+                document.getElementById('user-settings').style.display = 'block';
+                document.getElementById('username').innerText = username;
+                document.getElementById('login-register-link').style.display = 'none';
+            } else {
+                // Show login/register links if not logged in
+                document.getElementById('login-register-link').style.display = 'block';
+                document.getElementById('user-settings').style.display = 'none';
+            }
+
+            // Toggle dropdown visibility when clicking the settings icon
+            settingsIcon.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent the event from propagating
+
+                userSettings.classList.toggle('open');
+
+                if (userSettings.classList.contains('open')) {
+                    const rect = settingsIcon.getBoundingClientRect();
+                    const dropdownWidth = settingsDropdown.offsetWidth;
+                    const screenWidth = window.innerWidth;
+
+                    if (rect.left + dropdownWidth > screenWidth) {
+                        settingsDropdown.style.left = `${rect.left - dropdownWidth + settingsIcon.offsetWidth}px`;
+                    } else {
+                        settingsDropdown.style.left = `${rect.left}px`;
+                    }
+
+                    settingsDropdown.style.top = `${rect.bottom + window.scrollY}px`;
+                }
+            });
+
+            // Logout function
+            logoutLink.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+                window.location.href = 'index.html'; // Redirect to home after logout
+            });
+
+            const sessionApiUrl = window.config.sessionApiUrl;
+
+            // Session verification logic
+            document.addEventListener('DOMContentLoaded', async function() {
+                const token = localStorage.getItem('token');
+                
+                if (token) {
+                    try {
+                        const response = await fetch(`${sessionApiUrl}/api/sessions/verify`, {
+                            method: 'GET',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+
+                        const data = await response.json();
+                        if (response.ok) {
+                            console.log("Session is valid", data);
+                        } else {
+                            alert('Session expired or invalid, please log in again.');
+                            localStorage.removeItem('token');
+                            window.location.href = 'login.html';
+                        }
+                    } catch (error) {
+                        console.error('Error verifying session:', error);
+                    }
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // Close the dropdown if clicked outside
+            document.addEventListener('click', (event) => {
+                if (!userSettings.contains(event.target) && !settingsIcon.contains(event.target)) {
+                    userSettings.classList.remove('open');
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const modelDetailsContainer = document.querySelector('#model-details-container');
+            const urlParams = new URLSearchParams(window.location.search);
+            const modelId = urlParams.get('model_id');
+
+            try {
+                // Hacer la solicitud al catalog-service en el puerto 5003
+                const response = await fetch(`http://localhost:5003/models/id/${modelId}`);
+                const data = await response.json();
+
+                if (data.model) {
+                    modelDetailsContainer.innerHTML = `
+                        <div class="model-card">
+                            <img src="${data.model.image_url}" alt="${data.model.name}">
+                            <h2>${data.model.name}</h2>
+                            <p><strong>Created by:</strong> ${data.model.created_by}</p>
+                            <p><strong>Price:</strong> $${data.model.price}</p>
+                            <p><strong>Description:</strong> ${data.model.description || 'No description available.'}</p>
+                            <button id="customize-btn" data-model-id="${data.model.model_id}">Customize</button>
+                        </div>
+                    `;
+                } else {
+                    modelDetailsContainer.innerHTML = '<p>Model not found.</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching model details:', error);
+                modelDetailsContainer.innerHTML = '<p>Failed to load model details. Please try again later.</p>';
+            }
+        });
+
+        // Show the customization modal when the "Customize" button is clicked
+        document.querySelector('#model-details-container').addEventListener('click', (event) => {
+            if (event.target && event.target.id === 'customize-btn') {
+                const modelId = event.target.getAttribute('data-model-id');
+                showCustomizationModal(modelId);
+            }
+        });
+
+        function showCustomizationModal(modelId) {
+            const modal = document.getElementById('customization-modal');
+            const closeModal = document.getElementById('close-modal');
+            const form = document.getElementById('customization-form');
+            const customizationError = document.getElementById('customization-error');
+            const customizationSuccess = document.getElementById('customization-success');
+
+            modal.style.display = 'block';
+
+            // Close modal when the close button is clicked
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            // Close modal if the user clicks outside of the modal content
+            window.onclick = (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    customizationError.textContent = 'You must be logged in to customize the model.';
+                    return;
+                }
+
+                // Collect form data
+                const formData = new FormData(form);
+                const customParams = {};
+                formData.forEach((value, key) => {
+                    customParams[key] = value;
+                });
+
+                try {
+                    // Send customization request to custom-service
+                    const response = await fetch('http://localhost:5007/customize-model', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            model_id: modelId,  // El modelId se toma desde el atributo data-model-id
+                            custom_params: customParams
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        customizationSuccess.textContent = 'Model customized successfully!';
+                        customizationError.textContent = '';
+
+                        alert('Model customized successfully!');
+                        // Redirect to index.html after success
+                        window.location.href = 'index.html';
+                    } else {
+                        customizationError.textContent = data.message || 'An error occurred.';
+                    }
+                } catch (error) {
+                    customizationError.textContent = 'Failed to customize the model. Please try again later.';
+                }
+            });
+            // Close success modal
+            document.getElementById('close-success-modal').addEventListener('click', () => {
+                document.getElementById('success-modal').style.display = 'none';
+            });
+
+            // Redirect to index.html when clicking "Accept" button
+            document.getElementById('accept-success').addEventListener('click', () => {
+                window.location.href = 'index.html'; // Redirect to index page
+            });
+        }
+    </script>
+</body>
+</html>

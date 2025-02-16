@@ -1,11 +1,14 @@
+// redis-service.js
 const express = require("express");
 const redis = require("redis");
-const router = express.Router();
+const cors = require('cors'); 
+const app = express();
+const port = 5006;
 
 // Configurar Redis
 const redisClient = redis.createClient({
     socket: {
-        host: "localhost",  // Cambia esto si usas Docker (puede ser "redis-server")
+        host: "localhost",
         port: 6379
     }
 });
@@ -23,21 +26,30 @@ const redisClient = redis.createClient({
 // Middleware para manejar errores de Redis
 redisClient.on("error", (err) => console.error("❌ Redis Error:", err));
 
+// Configurar CORS
+app.use(cors({
+    origin: '*',  // Permitir solicitudes de cualquier origen
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Configurar el body parser
+app.use(express.json());
+
 // Guardar búsqueda en Redis para un usuario específico
-router.post("/save-search", async (req, res) => {
-    const { query, creator, username, firstModelName } = req.body;  // Ahora agregamos firstModelName
+app.post("/save-search", async (req, res) => {
+    const { query, creator, username, firstModelName } = req.body;
 
     if (!query || !username) {
         return res.status(400).send("Falta la consulta de búsqueda o el nombre de usuario");
     }
 
     try {
-        // Guardamos la búsqueda junto con el nombre del primer modelo en una lista de historial para el usuario
         const userSearchKey = `search-history:${username}`;
         const searchData = {
             query,
             creator,
-            firstModelName,  // Agregamos el nombre del primer modelo
+            firstModelName,
             timestamp: Date.now()
         };
         await redisClient.lPush(userSearchKey, JSON.stringify(searchData));
@@ -50,8 +62,8 @@ router.post("/save-search", async (req, res) => {
 });
 
 // Obtener las últimas búsquedas guardadas en Redis para un usuario específico
-router.get("/recent-searches", async (req, res) => {
-    const { username } = req.query;  // Obtenemos el username de la consulta
+app.get("/recent-searches", async (req, res) => {
+    const { username } = req.query;
 
     if (!username) {
         return res.status(400).send("Falta el nombre de usuario");
@@ -69,4 +81,7 @@ router.get("/recent-searches", async (req, res) => {
     }
 });
 
-module.exports = router;
+// Iniciar el servidor
+app.listen(port, () => {
+    console.log(`Servidor Redis-Service escuchando en http://localhost:${port}`);
+});

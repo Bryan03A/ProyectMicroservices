@@ -28,6 +28,18 @@
     cd search-service
         go run main.go
 
+6. Recommendation-service
+    cd recommendation-service
+        npm init -y
+        npm start
+
+7. customization service
+    cd custom-service
+        bundle install
+        ruby app.rb
+
+
+
     
 x. Interface (Node.js, Express, )
     cd interface-service
@@ -41,7 +53,7 @@ https://supabase.com/           (PostgreSQL) (kTGprwMyyiw3ltfv)
 https://cloud.mongodb.com/       (MongoDB)  (1997999 MicroserviceDev)
 
 
-docker run --name elasticsearch -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.6.0
+docker run -d --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" docker.elastic.co/elasticsearch/elasticsearch:8.6.0
 
 curl -X DELETE "http://localhost:9200/models"
 
@@ -54,7 +66,7 @@ docker run --name redis-server -p 6379:6379 -d redis
 
 docker ps
 
-docker exec -it redis_container_name redis-cli
+docker exec -it redis-server redis-cli
 
 KEYS *
 
