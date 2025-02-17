@@ -66,6 +66,48 @@ services:
     networks:
       - microservices-network
 
+  chat-service:
+    image: bfury0329/chat-service
+    ports:
+      - "5010:5010"
+    environment:
+      - POSTGRES_URI=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+      - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
+    networks:
+      - microservices-network  
+
+  orders-service:
+    image: bfury0329/orders-service
+    ports:
+      - "5008:5008"
+    environment:
+      - POSTGRES_URI=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+      - CATALOG_URL=http://catalog-service:5003/models/id/
+    networks:
+      - microservices-network
+    
+  custom-service:
+    image: bfury0329/custom-service
+    ports:
+      - "5007:5007"
+    environment:
+      - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
+      - POSTGRES_URI=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+      - AUTH_SERVICE_URL=http://auth-service:5001
+    networks:
+      - microservices-network
+
+  recommendation-service:
+    image: bfury0329/recommendation-service
+    ports:
+      - "5006:5006"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - microservices-network
+  
+
   
 
   nginx:

@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
         };
 
         // Realizar la consulta a Elasticsearch
-        const response = await axios.post('http://52.205.200.130:9200/models/_search', esQuery, {
+        const response = await axios.post('http://98.83.63.33:9200/models/_search', esQuery, {
             headers: { 'Content-Type': 'application/json' }
         });
 

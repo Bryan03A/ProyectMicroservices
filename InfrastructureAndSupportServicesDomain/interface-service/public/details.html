@@ -97,7 +97,7 @@
 
     <!-- Iframe Container -->
     <div class="iframe-container" id="iframeContainer">
-        <iframe src="http://52.91.86.137:5010" frameborder="0"></iframe>
+        <iframe src="http://98.83.63.33:5010" frameborder="0"></iframe>
     </div>
 
     <!-- Footer -->
@@ -214,7 +214,7 @@
 
             try {
                 // Make the request to the catalog-service on port 5003
-                const response = await fetch(`http://52.91.86.137:5003/models/id/${modelId}`);
+                const response = await fetch(`http://98.83.63.33:5003/models/id/${modelId}`);
                 const data = await response.json();
 
                 if (data.model) {
@@ -284,7 +284,7 @@
 
                 try {
                     // Send customization request to custom-service
-                    const response = await fetch('http://52.91.86.137:5007/customize-model', {
+                    const response = await fetch('http://98.83.63.33:5007/customize-model', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
