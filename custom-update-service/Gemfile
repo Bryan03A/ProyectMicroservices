@@ -16,3 +16,4 @@ gem 'json'           # JSON parsing and generation
 gem 'net-http'       # HTTP library for making requests
 gem 'activerecord'   # ORM for connecting to PostgreSQL database
 gem 'rack-cors'      # Middleware for Cross-Origin Resource Sharing
+

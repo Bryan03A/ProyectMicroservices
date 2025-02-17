@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Printing Model Shop</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/orders.css">
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="navbar">
+            <div class="logo">
+                <a href="index.html">3D Model Shop</a>
+            </div>
+            <div class="nav-links">
+                <ul>
+                    <li><a href="catalog.html" class="nav-link" id="catalogLink">Add</a></li>
+                    <!-- If logged in, show username and the settings icon, else show login/register -->
+                    <li id="login-register-link" style="display: none;"><a href="login.html">Login</a> / <a href="register.html">Register</a></li>
+                    <li id="user-settings" style="display: none;">
+                        <span id="username"></span> 
+                        <span id="settings-icon">&#9881;</span> <!-- Gear icon -->
+                        <div id="settings-dropdown" class="dropdown">
+                            <a href="profile.html">Profile</a>
+                            <a href="#" id="logout-link">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Orders Section -->
+    <section id="orders">
+        <h2>Your Orders</h2>
+        <div id="orders-list"></div>
+    </section>
+
+    <!-- Botón para abrir/cerrar el iframe -->
+    <div class="toggle-button" onclick="toggleIframe()">&#8595;</div>
+
+    <!-- Contenedor del iframe -->
+    <div class="iframe-container" id="iframeContainer">
+        <iframe src="http://localhost:5010" frameborder="0"></iframe>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 3D Model Shop. All rights reserved.</p>
+    </footer>
+
+    <script src="config.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+
+            const userSettings = document.getElementById('user-settings');
+            const settingsIcon = document.getElementById('settings-icon');
+            const settingsDropdown = document.getElementById('settings-dropdown');
+            const loginRegisterLink = document.getElementById('login-register-link');
+            const logoutLink = document.getElementById('logout-link');
+            
+            if (token && username) {
+                // Show user settings and username if logged in
+                document.getElementById('user-settings').style.display = 'block';
+                document.getElementById('username').innerText = username;
+                document.getElementById('login-register-link').style.display = 'none';
+            } else {
+                // Show login/register links if not logged in
+                document.getElementById('login-register-link').style.display = 'block';
+                document.getElementById('user-settings').style.display = 'none';
+            }
+
+            // Toggle dropdown visibility when clicking the settings icon
+            settingsIcon.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent the event from propagating
+
+                userSettings.classList.toggle('open');
+
+                if (userSettings.classList.contains('open')) {
+                    const rect = settingsIcon.getBoundingClientRect();
+                    const dropdownWidth = settingsDropdown.offsetWidth;
+                    const screenWidth = window.innerWidth;
+
+                    if (rect.left + dropdownWidth > screenWidth) {
+                        settingsDropdown.style.left = `${rect.left - dropdownWidth + settingsIcon.offsetWidth}px`;
+                    } else {
+                        settingsDropdown.style.left = `${rect.left}px`;
+                    }
+
+                    settingsDropdown.style.top = `${rect.bottom + window.scrollY}px`;
+                }
+            });
+
+            // Logout function
+            logoutLink.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+                window.location.href = 'index.html'; // Redirect to home after logout
+            });
+
+            const sessionApiUrl = window.config.sessionApiUrl;
+
+            // Session verification logic
+            document.addEventListener('DOMContentLoaded', async function() {
+                const token = localStorage.getItem('token');
+                
+                if (token) {
+                    try {
+                        const response = await fetch(`${sessionApiUrl}/api/sessions/verify`, {
+                            method: 'GET',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+
+                        const data = await response.json();
+                        if (response.ok) {
+                            console.log("Session is valid", data);
+                        } else {
+                            alert('Session expired or invalid, please log in again.');
+                            localStorage.removeItem('token');
+                            window.location.href = 'login.html';
+                        }
+                    } catch (error) {
+                        console.error('Error verifying session:', error);
+                    }
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+
+            function toggleIframe() {
+                const iframeContainer = document.getElementById('iframeContainer');
+                const arrowButton = document.querySelector('.toggle-button');
+
+                // Change the position of the container (move it from the right)
+                if (iframeContainer.style.right === '0px') {
+                    iframeContainer.style.right = '-400px'; // Push the iframe off-screen
+                    arrowButton.innerHTML = '&#8594;';  // Right arrow
+                } else {
+                    iframeContainer.style.right = '0px';  // Show the iframe
+                    arrowButton.innerHTML = '&#8592;';  // Left arrow
+                }
+            }
+
+            // Decode the JWT token to extract user_id
+            if (token) {
+                const decodedToken = jwt_decode(token);
+                const userId = decodedToken.user_id; // Assuming 'user_id' is part of the token's payload
+                
+                // Fetch orders for the logged-in user
+                fetchOrders(userId);
+            }
+
+            async function fetchOrders(userId) {
+                try {
+                    const response = await fetch(`http://localhost:5008/orders/user/${userId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        console.log('Orders:', data.orders);
+                        displayOrders(data.orders);
+                    } else {
+                        alert('Error fetching orders');
+                    }
+                } catch (error) {
+                    console.error('Error fetching orders:', error);
+                }
+            }
+
+            function displayOrders(orders) {
+                const ordersList = document.getElementById('orders-list');
+                if (orders.length > 0) {
+                    ordersList.innerHTML = '';
+                    orders.forEach(order => {
+                        const orderElement = document.createElement('div');
+                        orderElement.classList.add('order');
+                        orderElement.innerHTML = `
+                            <h3>Order ID: ${order.id}</h3>
+                            <p><strong>Model Name:</strong> ${order.model_details.name}</p>
+                            <p><strong>Description:</strong> ${order.model_details.description}</p>
+                            <p><strong>Cost Initial:</strong> <span class="cost-initial">$${order.cost_initial}</span></p>
+                            <p><strong>Cost Final:</strong> <span class="cost-final">$${order.cost_final}</span></p>
+                            <div class="custom-params">
+                                <strong>Custom Parameters:</strong>
+                                ${formatCustomParams(order.custom_params)}
+                            </div>
+                            <p><strong>Created At:</strong> ${order.created_at}</p>
+                            <div class="details-button-container">
+                                <a href="infodetails.html?id=${order.id}" class="details-button">Detalles</a>
+                            </div>
+                        `;
+                        ordersList.appendChild(orderElement);
+                    });
+                } else {
+                    ordersList.innerHTML = '<p>No orders found.</p>';
+                }
+            }
+
+            function formatCustomParams(customParams) {
+                try {
+                    // Mapeo de los nombres de los parámetros a los nombres legibles
+                    const paramMappings = {
+                        "filament_quality": "Filament quality",
+                        "color": "Color",
+                        "size": "Size",
+                        "shape_complexity": "Shape complexity",
+                        "material_type": "Material type"
+                    };
+
+                    // Si customParams es una cadena con comillas escapadas, quitamos las comillas extra al principio y al final
+                    if (typeof customParams === 'string') {
+                        customParams = customParams.replace(/^"|"$/g, ''); // Elimina las comillas al principio y al final
+                        customParams = customParams.replace(/\\"/g, '"'); // Reemplaza las comillas escapadas
+                    }
+
+                    // Ahora customParams debería ser una cadena JSON válida, la parseamos
+                    const params = JSON.parse(customParams);
+
+                    // Verificamos si realmente es un objeto antes de continuar
+                    if (typeof params === 'object' && params !== null) {
+                        // Creamos la tabla HTML con clases para estilo
+                        let tableHTML = '<table class="custom-params-table"><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody>';
+                        
+                        // Iteramos sobre los parámetros y agregamos una fila por cada uno
+                        Object.keys(params).forEach(key => {
+                            // Reformateamos el nombre de la clave utilizando el mapeo
+                            const formattedKey = paramMappings[key] || key; // Si no se encuentra el mapeo, usamos la clave original
+                            tableHTML += `<tr><td><strong>${formattedKey}</strong></td><td>${params[key]}</td></tr>`;
+                        });
+
+                        tableHTML += '</tbody></table>';
+                        return tableHTML;
+                    } else {
+                        return `<p><strong>Invalid custom parameters format.</strong></p>`;
+                    }
+                } catch (error) {
+                    console.error('Error parsing custom parameters:', error);
+                    return `<p><strong>Error parsing parameters.</strong></p>`;
+                }
+            }
+
+            // Close the dropdown if clicked outside
+            document.addEventListener('click', (event) => {
+                if (!userSettings.contains(event.target) && !settingsIcon.contains(event.target)) {
+                    userSettings.classList.remove('open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

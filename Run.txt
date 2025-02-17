@@ -38,7 +38,19 @@
         bundle install
         ruby app.rb
 
+8. order service
+    cd orders-service
+        go run main.go
 
+9. chat service
+    cd chat-service
+    venv\Scripts\activate
+    pip install -r requirements.txt
+python app.py
+    
+11. model service
+    cd model-service
+    python -m venv venv
 
     
 x. Interface (Node.js, Express, )

@@ -1,0 +1,28 @@
+# Ignore Ruby files and folders
+*.gem
+*.rbc
+.bundle/
+.config/
+log/
+tmp/
+
+# Ignore database files
+*.sqlite3
+*.sqlite3-journal
+
+# Ignore IDE configuration files
+.idea/
+.vscode/
+
+# Ignore the .env file (environment variable configuration)
+.env
+
+# Ignore Docker files
+Dockerfile
+docker-compose.yml
+
+# Ignore Ruby dependency directories
+/vendor/bundle
+
+# Ignore Node.js dependencies if you have Node.js in your project
+/node_modules/

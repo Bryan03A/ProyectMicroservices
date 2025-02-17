@@ -1,0 +1,5 @@
+flask
+flask-socketio
+pymongo
+flask-cors
+psycopg2

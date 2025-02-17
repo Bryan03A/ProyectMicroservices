@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/infodetails.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="navbar">
+            <div class="logo">
+                <a href="index.html">3D Model Shop</a>
+            </div>
+            <div class="nav-links">
+                <ul>
+                    <li><a href="orders.html" class="nav-link-order" id="ordersLink">Orders</a></li>
+                    <li><a href="catalog.html" class="nav-link" id="catalogLink">Add</a></li>
+                    <!-- If logged in, show username and the settings icon, else show login/register -->
+                    <li id="login-register-link" style="display: none;"><a href="login.html">Login</a> / <a href="register.html">Register</a></li>
+                    <li id="user-settings" style="display: none;">
+                        <span id="username"></span> 
+                        <span id="settings-icon">&#9881;</span> <!-- Gear icon -->
+                        <div id="settings-dropdown" class="dropdown">
+                            <a href="profile.html">Profile</a>
+                            <a href="#" id="logout-link">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="order-details">
+        <h2>Customized Model Details</h2>
+        <div id="model-info">
+            <p>Loading details...</p>
+        </div>
+        <button id="edit-button">Edit</button>
+        <button id="delete-button">Delete</button>
+        <button id="chat-button">Chat</button>
+    </section>
+
+    <!-- Model Edit Modal -->
+    <div id="edit-modal" style="display: none;">
+        <h3>Edit Model Parameters</h3>
+        <form id="edit-form">
+            <label for="filament-quality">Filament Quality:</label>
+            <select id="filament-quality">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+            <br>
+
+            <label for="color">Color:</label>
+            <select id="color">
+                <option value="Red">Red</option>
+                <option value="Gold">Gold</option>
+                <option value="Blue">Blue</option>
+            </select>
+            <br>
+
+            <label for="size">Size:</label>
+            <select id="size">
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
+            </select>
+            <br>
+
+            <label for="shape-complexity">Shape Complexity:</label>
+            <select id="shape-complexity">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+            <br>
+
+            <label for="material-type">Material Type:</label>
+            <select id="material-type">
+                <option value="Standard">Standard</option>
+                <option value="Premium">Premium</option>
+                <option value="Luxury">Luxury</option>
+            </select>
+            <br>
+
+            <button type="button" id="save-changes-btn">Save Changes</button>
+            <button type="button" id="close-modal-btn">Close</button>
+        </form>
+    </div>
+
+    <!-- Confirmation Box to Delete -->
+    <div id="confirm-delete" style="display: none;">
+        <p>Are you sure you want to delete this customized model?</p>
+        <button id="confirm-delete-btn">Delete</button>
+        <button id="cancel-delete-btn">Cancel</button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 3D Model Shop. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById("chat-button").addEventListener("click", function () {
+            // Obtener los parámetros de la URL actual
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("id"); // Extrae el id de la URL actual
+
+            // Redirigir a la nueva página con el mismo id
+            if (id) {
+                window.location.href = `http://localhost:8080/chat.html?id=${id}`;
+            } else {
+                window.location.href = "http://localhost:8080/chat.html"; // Si no hay id, redirige sin parámetro
+            }
+        });
+        
+        // 1️⃣ GET THE TOKEN
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error("🔴 No token in localStorage. Redirecting to login.");
+            window.location.href = 'login.html';
+        }
+    
+        // 2️⃣ GET THE ID FROM THE URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelId = urlParams.get('id');
+    
+        let currentCustomParams = {};
+    
+        function formatCustomParams(customParams) {
+            try {
+                const paramMappings = {
+                    "filament_quality": "Filament quality",
+                    "color": "Color",
+                    "size": "Size",
+                    "shape_complexity": "Shape complexity",
+                    "material_type": "Material type"
+                };
+    
+                if (typeof customParams === 'string') {
+                    customParams = customParams.replace(/^"|"$/g, '');
+                    customParams = customParams.replace(/\\"/g, '"');
+                }
+    
+                const params = JSON.parse(customParams);
+    
+                if (typeof params === 'object' && params !== null) {
+                    let tableHTML = '<table class="custom-params-table"><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody>';
+                    Object.keys(params).forEach(key => {
+                        const formattedKey = paramMappings[key] || key;
+                        tableHTML += `
+                            <tr>
+                                <td><strong>${formattedKey}</strong></td>
+                                <td>${params[key]}</td>
+                            </tr>
+                        `;
+                    });
+                    tableHTML += '</tbody></table>';
+                    return tableHTML;
+                } else {
+                    return `<p><strong>Invalid custom parameters format.</strong></p>`;
+                }
+            } catch (error) {
+                console.error('Error parsing custom parameters:', error);
+                return `<p><strong>Error parsing parameters.</strong></p>`;
+            }
+        }
+    
+        function loadModelDetails() {
+            if (!modelId) {
+                console.error("🔴 'id' parameter not found in the URL.");
+                document.getElementById("model-info").innerHTML = "<p>Error: ID not found in the URL.</p>";
+                return;
+            }
+    
+            console.log("✅ Model ID:", modelId);
+            console.log("✅ Token obtained:", token);
+    
+            // 3️⃣ MAKE THE REQUEST TO THE BACKEND
+            fetch(`http://localhost:5007/customize-model/${modelId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(`API Error (${response.status}): ${text}`) });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("✅ Data received from API:", data);
+    
+                currentCustomParams = data.custom_model.custom_params; // Store the current parameters
+    
+                document.getElementById("model-info").innerHTML = `
+                    <h3>Customized Model</h3>
+                    <p><strong>ID:</strong> ${data.custom_model.id}</p>
+                    <p><strong>User:</strong> ${data.custom_model.user_id}</p>
+                    <p><strong>Initial Price:</strong> $${data.custom_model.cost_initial}</p>
+                    <p><strong>Final Price:</strong> $${data.custom_model.cost_final}</p>
+                    <p><strong>Parameters:</strong></p>
+                    <div id="params-table">${formatCustomParams(data.custom_model.custom_params)}</div>
+    
+                    <h3>Original Model</h3>
+                    <p><strong>Name:</strong> ${data.original_model.name}</p>
+                    <p><strong>Description:</strong> ${data.original_model.description}</p>
+                    <p><strong>Format:</strong> ${data.original_model.format}</p>
+                `;
+            })
+            .catch(error => {
+                console.error("🔴 Request error:", error);
+                document.getElementById("model-info").innerHTML = `<p>Error: Could not retrieve model information.</p>`;
+            });
+        }
+    
+        // Call the function to load the details
+        loadModelDetails();
+    
+        // 4️⃣ Handle click on "Modify" button
+        document.getElementById("edit-button").addEventListener("click", () => {
+            // Show the edit modal
+            showModal();
+        });
+    
+        // 5️⃣ Display current values in the modal
+        function showModal() {
+            document.getElementById("edit-modal").style.display = "block";
+    
+            // Fill form fields with current parameters
+            document.getElementById("filament-quality").value = currentCustomParams.filament_quality || "Medium";
+            document.getElementById("color").value = currentCustomParams.color || "Red";
+            document.getElementById("size").value = currentCustomParams.size || "Medium";
+            document.getElementById("shape-complexity").value = currentCustomParams.shape_complexity || "Medium";
+            document.getElementById("material-type").value = currentCustomParams.material_type || "Standard";
+        }
+    
+        // 6️⃣ Save form changes
+        document.getElementById("save-changes-btn").addEventListener("click", () => {
+            const updatedParams = {
+                filament_quality: document.getElementById("filament-quality").value,
+                color: document.getElementById("color").value,
+                size: document.getElementById("size").value,
+                shape_complexity: document.getElementById("shape-complexity").value,
+                material_type: document.getElementById("material-type").value
+            };
+    
+            // Send changes to the server
+            fetch(`http://localhost:5007/customize-model/${modelId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    custom_params: updatedParams
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("✅ Updated data:", data);
+                alert("Model parameters updated.");
+                document.getElementById("edit-modal").style.display = "none";
+                loadModelDetails(); // Reload details to show changes
+            })
+            .catch(error => {
+                console.error("🔴 Error updating data:", error);
+                alert("Error updating parameters.");
+            });
+        });
+    
+        // 7️⃣ Close the modal
+        document.getElementById("close-modal-btn").addEventListener("click", () => {
+            document.getElementById("edit-modal").style.display = "none";
+        });
+    
+        // 8️⃣ Handle click on "Delete" button
+        document.getElementById("delete-button").addEventListener("click", () => {
+            document.getElementById("confirm-delete").style.display = "block";
+        });
+    
+        // 9️⃣ Confirm deletion
+        document.getElementById("confirm-delete-btn").addEventListener("click", () => {
+            fetch(`http://localhost:5007/customize-model/${modelId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Model deleted successfully.");
+                window.location.href = 'orders.html'; // Redirect to orders list
+            })
+            .catch(error => {
+                console.error("🔴 Error deleting model:", error);
+                alert("Error deleting model.");
+            });
+        });
+    
+        // 10️⃣ Cancel deletion
+        document.getElementById("cancel-delete-btn").addEventListener("click", () => {
+            document.getElementById("confirm-delete").style.display = "none";
+        });
+
+    </script>    
+
+</body>
+</html>

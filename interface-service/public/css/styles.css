@@ -176,6 +176,16 @@ footer p {
     transition: background-color 0.3s ease;
 }
 
+.nav-link-order {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2ed300;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
 .nav-link:hover {
     background-color: #0056b3;
 }
@@ -183,6 +193,16 @@ footer p {
 /* Active Navigation Link */
 .nav-link.active {
     background-color: #0056b3;
+    color: white;
+}
+
+.nav-link-order:hover {
+    background-color: #b3b000;
+}
+
+/* Active Navigation Link */
+.nav-link-order.active {
+    background-color: #b3a40051;
     color: white;
 }
 
@@ -195,4 +215,38 @@ ul {
     gap: 20px;
     justify-content: center;
     margin-top: 20px;
+}
+
+.iframe-container {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Empujamos el iframe fuera de la pantalla */
+    width: 400px;
+    height: 100%;
+    background-color: #f9f9f9;
+    border-left: 2px solid #ccc;
+    transition: right 0.3s ease-in-out; /* Animación de desplazamiento */
+    z-index: 1000;
+}
+
+/* Estilo del iframe */
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Estilo de la flecha para abrir y cerrar */
+.toggle-button {
+    position: fixed;
+    top: 50%;
+    right: 10px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 1050;
+    transform: translateY(-50%);
 }

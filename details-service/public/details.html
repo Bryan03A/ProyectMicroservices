@@ -92,10 +92,10 @@
         </div>
     </div>
 
-    <!-- Button to toggle iframe visibility -->
+    <!-- Botón para abrir/cerrar el iframe -->
     <div class="toggle-button" onclick="toggleIframe()">&#8595;</div>
 
-    <!-- Iframe Container -->
+    <!-- Contenedor del iframe -->
     <div class="iframe-container" id="iframeContainer">
         <iframe src="http://localhost:5010" frameborder="0"></iframe>
     </div>
@@ -197,13 +197,13 @@
             const iframeContainer = document.getElementById('iframeContainer');
             const arrowButton = document.querySelector('.toggle-button');
 
-            // Change the position of the container (slide from the right)
+            // Cambiar la posición del contenedor (desplazar desde la derecha)
             if (iframeContainer.style.right === '0px') {
-                iframeContainer.style.right = '-400px'; // Push iframe out of the screen
-                arrowButton.innerHTML = '&#8594;';  // Right arrow
+                iframeContainer.style.right = '-400px'; // Empujamos el iframe fuera de la pantalla
+                arrowButton.innerHTML = '&#8594;';  // Flecha hacia la derecha
             } else {
-                iframeContainer.style.right = '0px';  // Show iframe
-                arrowButton.innerHTML = '&#8592;';  // Left arrow
+                iframeContainer.style.right = '0px';  // Muestra el iframe
+                arrowButton.innerHTML = '&#8592;';  // Flecha hacia la izquierda
             }
         }
 
@@ -213,7 +213,7 @@
             const modelId = urlParams.get('model_id');
 
             try {
-                // Make the request to the catalog-service on port 5003
+                // Hacer la solicitud al catalog-service en el puerto 5003
                 const response = await fetch(`http://localhost:5003/models/id/${modelId}`);
                 const data = await response.json();
 
@@ -291,7 +291,7 @@
                             'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({
-                            model_id: modelId,  // The modelId is taken from the data-model-id attribute
+                            model_id: modelId,  // El modelId se toma desde el atributo data-model-id
                             custom_params: customParams
                         })
                     });
@@ -319,7 +319,7 @@
 
             // Redirect to index.html when clicking "Accept" button
             document.getElementById('accept-success').addEventListener('click', () => {
-                window.location.href = 'orders.html'; // Redirect to orders page
+                window.location.href = 'orders.html'; // Redirect to index page
             });
         }
     </script>

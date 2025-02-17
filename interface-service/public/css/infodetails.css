@@ -1,0 +1,127 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h2, h3 {
+    color: #333;
+}
+
+section {
+    padding: 20px;
+    background-color: #fff;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 800px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Modal Styles */
+#edit-modal, #confirm-delete {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    width: 400px;
+}
+
+#edit-modal h3, #confirm-delete p {
+    color: #333;
+}
+
+#edit-modal select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#confirm-delete button {
+    background-color: #e74c3c;
+}
+
+#confirm-delete button:hover {
+    background-color: #c0392b;
+}
+
+/* Overlay for Modal */
+#edit-modal, #confirm-delete {
+    background-color: rgba(0, 0, 0, 0.5); /* Transparent black background */
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Info Details */
+#model-info p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+#model-info h3 {
+    color: #333;
+}
+
+#model-info {
+    margin-bottom: 20px;
+}
+
+/* Order Details Buttons */
+button {
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 14px;
+    padding: 8px 15px;
+}
+
+/* Table for Custom Parameters */
+.custom-params-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.custom-params-table th, .custom-params-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.custom-params-table th {
+    background-color: #f2f2f2;
+}
+
+/* Confirmation Box */
+#confirm-delete {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    text-align: center;
+}

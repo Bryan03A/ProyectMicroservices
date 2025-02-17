@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <style>
+        /* Estilo general de la página */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #333;
+            color: #333;
+            padding: 20px;
+            margin: 0;
+        }
+        h2 {
+            color: #ffffff;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Contenedor del chat */
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 400px;
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #707070;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        #chat-container div {
+            margin: 5px 0;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        /* Estilos para los campos de entrada */
+        input[type="text"], button {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #707070;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #message-box {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #message-input {
+            width: 80%;
+            margin-right: 10px;
+        }
+
+        #user-name-container,
+        #chat-params-container {
+            margin-bottom: 20px;
+        }
+
+        /* Estilos de los contenedores de formularios */
+        label {
+            font-weight: bold;
+        }
+
+        #user-name-container, #chat-params-container {
+            background-color: #707070;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Botón para iniciar el chat */
+        #start-chat-button {
+            display: block;
+            width: 100%;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        #start-chat-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Chat</h2>
+    
+    <div id="user-name-container">
+        <label for="user-name">Nombre de Usuario: </label>
+        <input type="text" id="user-name" placeholder="Ingresa tu nombre" />
+    </div>
+    
+    <div id="chat-params-container">
+        <label for="id-cliente">ID del Cliente: </label>
+        <input type="text" id="id-cliente" placeholder="Ingresa tu ID de cliente" />
+        
+        <label for="created-by">Creado por: </label>
+        <input type="text" id="created-by" placeholder="Creador de modelo" />
+        
+        <label for="id-modelo">ID del Modelo 3D: </label>
+        <input type="text" id="id-modelo" placeholder="Ingresa el ID del modelo 3D" />
+    </div>
+
+    <button id="start-chat-button">Iniciar Chat</button>
+
+    <div id="chat-container"></div>
+
+    <div id="message-box">
+        <input type="text" id="message-input" placeholder="Escribe un mensaje..." />
+        <button id="send-button">Enviar</button>
+    </div>
+
+    <script>
+        const socket = io("http://localhost:5010");  // Ajusta la URL si es necesario
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const startChatButton = document.getElementById('start-chat-button');
+        const userNameInput = document.getElementById('user-name');
+        const idClienteInput = document.getElementById('id-cliente');
+        const createdByInput = document.getElementById('created-by');
+        const idModeloInput = document.getElementById('id-modelo');
+
+        let chatId = null;
+
+        // Función para agregar mensajes al chat
+        function addMessage(messageData) {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `${messageData.sender}: ${messageData.message}`;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;  // Desplaza hacia abajo
+        }
+
+        // Función para iniciar el chat
+        function startChat() {
+            const userName = userNameInput.value.trim();
+            const idCliente = idClienteInput.value.trim();
+            const createdBy = createdByInput.value.trim();
+            const idModelo = idModeloInput.value.trim();
+
+            if (!userName || !idCliente || !createdBy || !idModelo) {
+                alert("Por favor, ingresa todos los datos.");
+                return;
+            }
+
+            // Hacer una solicitud para crear el chat o obtener uno existente
+            fetch('/start_chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_cliente: idCliente, created_by: createdBy, id_modelo: idModelo })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatId = data.id_chat;
+                // Unirse al chat con el nombre de usuario
+                socket.emit('join_chat', { chatId, userName });
+            })
+            .catch(error => console.error('Error al crear o obtener el chat:', error));
+        }
+
+        // Unirse al chat y cargar el historial
+        socket.on('load_history', function(messages) {
+            messages.forEach(function(message) {
+                addMessage(message);
+            });
+        });
+
+        // Recibir mensajes
+        socket.on('receive_message', function(data) {
+            addMessage(data);
+        });
+
+        // Enviar mensaje
+        sendButton.addEventListener('click', function() {
+            const message = messageInput.value.trim();
+            if (message) {
+                const data = {
+                    id_chat: chatId,
+                    message: message,
+                    sender: userNameInput.value.trim()  // Usar el nombre del usuario
+                };
+
+                // Emitir el mensaje al servidor
+                socket.emit('send_message', data);
+
+                // Limpiar el campo de texto
+                messageInput.value = '';
+            }
+        });
+
+        // Iniciar el chat cuando el usuario ingrese su nombre
+        startChatButton.addEventListener('click', startChat);
+    </script>
+
+</body>
+</html>

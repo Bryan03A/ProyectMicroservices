@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Chat</title>
+    <link rel="stylesheet" href="chat.css">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+
+    <h2>Real-Time Chat</h2>
+    
+    <div id="user-name-container">
+        <label for="user-name">Username: </label>
+        <input type="text" id="user-name" placeholder="Enter your name" />
+    </div>
+    
+    <div id="chat-params-container">
+        <label for="id-client">Client ID: </label>
+        <input type="text" id="id-client" placeholder="Enter your client ID" />
+        
+        <label for="created-by">Created by: </label>
+        <input type="text" id="created-by" placeholder="Model creator" />
+        
+        <label for="id-model">3D Model ID: </label>
+        <input type="text" id="id-model" placeholder="Enter the 3D model ID" />
+    </div>
+
+    <button id="start-chat-button">Start Chat</button>
+
+    <div id="chat-container"></div>
+
+    <div id="message-box">
+        <input type="text" id="message-input" placeholder="Type a message..." />
+        <button id="send-button">Send</button>
+    </div>
+
+    <script>
+        const socket = io("http://localhost:5010");  // Adjust the URL if necessary
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const startChatButton = document.getElementById('start-chat-button');
+        const userNameInput = document.getElementById('user-name');
+        const idClientInput = document.getElementById('id-client');
+        const createdByInput = document.getElementById('created-by');
+        const idModelInput = document.getElementById('id-model');
+
+        let chatId = null;
+
+        // Function to add messages to the chat
+        function addMessage(messageData) {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `${messageData.sender}: ${messageData.message}`;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;  // Scroll down
+        }
+
+        // Function to start the chat
+        function startChat() {
+            const userName = userNameInput.value.trim();
+            const idClient = idClientInput.value.trim();
+            const createdBy = createdByInput.value.trim();
+            const idModel = idModelInput.value.trim();
+
+            if (!userName || !idClient || !createdBy || !idModel) {
+                alert("Please enter all the details.");
+                return;
+            }
+
+            // Make a request to create the chat or get an existing one
+            fetch('/start_chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_client: idClient, created_by: createdBy, id_model: idModel })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatId = data.id_chat;
+                // Join the chat with the username
+                socket.emit('join_chat', { chatId, userName });
+            })
+            .catch(error => console.error('Error creating or getting the chat:', error));
+        }
+
+        // Join the chat and load the history
+        socket.on('load_history', function(messages) {
+            messages.forEach(function(message) {
+                addMessage(message);
+            });
+        });
+
+        // Receive messages
+        socket.on('receive_message', function(data) {
+            addMessage(data);
+        });
+
+        // Send a message
+        sendButton.addEventListener('click', function() {
+            const message = messageInput.value.trim();
+            if (message) {
+                const data = {
+                    id_chat: chatId,
+                    message: message,
+                    sender: userNameInput.value.trim()  // Use the username
+                };
+
+                // Emit the message to the server
+                socket.emit('send_message', data);
+
+                // Clear the input field
+                messageInput.value = '';
+            }
+        });
+
+        // Start the chat when the user enters their name
+        startChatButton.addEventListener('click', startChat);
+    </script>
+
+</body>
+</html>

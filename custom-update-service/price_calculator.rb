@@ -2,70 +2,70 @@
 
 class PriceCalculator
   def self.calculate(price, custom_params)
-    final_cost = price # The initial price is the model's price
+    cost_final = price # El precio inicial es el precio del modelo
 
     custom_params.each do |key, value|
-      # Adjustment for filament quality
+      # Ajuste por calidad del filamento
       if key == 'filament_quality'
         case value
         when 'Low'
-          final_cost += 0
+          cost_final += 0
         when 'Medium'
-          final_cost += 5.0
+          cost_final += 5.0
         when 'High'
-          final_cost += 10.0
+          cost_final += 10.0
         end
       end
 
-      # Adjustment for color
+      # Ajuste por color
       if key == 'color'
         case value
         when 'Red'
-          final_cost += 0
+          cost_final += 0
         when 'Gold'
-          final_cost += 5.0
+          cost_final += 5.0
         when 'Blue'
-          final_cost += 3.0
+          cost_final += 3.0
         end
       end
 
-      # Adjustment for size
+      # Ajuste por tamaño
       if key == 'size'
         case value
         when 'Small'
-          final_cost += 0
+          cost_final += 0
         when 'Medium'
-          final_cost += 5.0
+          cost_final += 5.0
         when 'Large'
-          final_cost += 8.0
+          cost_final += 8.0
         end
       end
 
-      # Adjustment for shape complexity
+      # Ajuste por complejidad de la forma
       if key == 'shape_complexity'
         case value
         when 'Low'
-          final_cost += 0
+          cost_final += 0
         when 'Medium'
-          final_cost += 6.0
+          cost_final += 6.0
         when 'High'
-          final_cost += 12.0
+          cost_final += 12.0
         end
       end
 
-      # Adjustment for material type
+      # Ajuste por tipo de material
       if key == 'material_type'
         case value
         when 'Standard'
-          final_cost += 0
+          cost_final += 0
         when 'Premium'
-          final_cost += 15.0
+          cost_final += 15.0
         when 'Luxury'
-          final_cost += 25.0
+          cost_final += 25.0
         end
       end
     end
 
-    return final_cost
+    return cost_final
   end
 end
