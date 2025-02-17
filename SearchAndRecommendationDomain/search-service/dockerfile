@@ -22,9 +22,6 @@ WORKDIR /app
 # Copiar el binario compilado desde la etapa de construcción
 COPY --from=build /app/search-service .
 
-# Copiar el archivo de configuración (si es necesario)
-COPY --from=build /app/config/config.go /app/config/
-
 # Exponer el puerto en el que la aplicación escuchará (ajustar si es necesario)
 EXPOSE 5005
 

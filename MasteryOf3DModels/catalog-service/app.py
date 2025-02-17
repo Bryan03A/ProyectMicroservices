@@ -14,8 +14,8 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Enable CORS to allow requests from 52.91.86.137:8080
-CORS(app, origins=["http://52.91.86.137:8080"], supports_credentials=True)
+# Enable CORS to allow requests from 98.83.63.33:8080
+CORS(app, origins=["http://98.83.63.33:8080"], supports_credentials=True)
 
 # MongoDB Configuration
 MONGO_URI = os.getenv("MONGO_URI")
@@ -27,7 +27,7 @@ models_collection = db["models"]  # Collection to store 3D models
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Elasticsearch Configuration
-ELASTICSEARCH_URL = "http://52.91.86.137:9200"
+ELASTICSEARCH_URL = "http://98.83.63.33:9200"
 
 # Function to decode JWT token and get user_id
 def get_user_info_from_token():

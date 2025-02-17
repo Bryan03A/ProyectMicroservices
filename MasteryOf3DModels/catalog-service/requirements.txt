@@ -4,4 +4,3 @@ python-dotenv
 flask-cors
 PyJWT
 requests
-bson

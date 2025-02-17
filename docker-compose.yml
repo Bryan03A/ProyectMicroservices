@@ -1,4 +1,72 @@
 services:
+  auth-service:
+    image: bfury0329/auth-service:latest
+    ports:
+      - "5001:5001"
+    environment:
+      - DATABASE_URL=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+      - SQLALCHEMY_TRACK_MODIFICATIONS=true
+      - SECRET_KEY=mysecretkey
+    networks:
+      - microservices-network
+
+  catalog-service:
+    image: bfury0329/catalog-service:latest
+    ports:
+      - "5003:5003"
+    environment:
+      - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
+      - SECRET_KEY=mysecretkey
+    networks:
+      - microservices-network
+
+  session-service:
+    image: bfury0329/session-service:latest
+    ports:
+      - "5004:5004"
+    environment:
+      - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
+      - PORT=5004
+    networks:
+      - microservices-network
+
+  interface-service:
+    image: bfury0329/interface-service:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - CATALOG_SERVICE_URL=http://catalog-service:5003
+      - SESSION_SERVICE_URL=http://session-service:5004
+      - USER_SERVICE_URL=http://user-service:5002
+      - SEARCH_SERVICE_URL=http://search-service:5005  
+    networks:
+      - microservices-network
+
+  user-service:
+    image: bfury0329/user-service:latest
+    ports:
+      - "5002:5002"
+    environment:
+      - POSTGRESQL_HOST=aws-0-us-west-1.pooler.supabase.com
+      - POSTGRESQL_PORT=6543
+      - POSTGRESQL_DATABASE=postgres
+      - POSTGRESQL_USER=postgres.imfqyzgimtercyyqeqof
+      - POSTGRESQL_PASSWORD=1997Guallaba
+    networks:
+      - microservices-network
+
+  search-service:
+    image: bfury0329/search-service:latest
+    ports:
+      - "5005:5005"
+    environment:
+      - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
+      - ELASTICSEARCH_URI=http://localhost:9200
+    networks:
+      - microservices-network
+
+  
 
   nginx:
     image: nginx:latest
@@ -6,27 +74,13 @@ services:
       - "80:80" 
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-    networks:
-      - microservices-network
-
-  # Servicio de Elasticsearch
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.0
-    container_name: elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-    ports:
-      - "9200:9200"
-    networks:
-      - microservices-network
-
-  # Servicio de Redis
-  redis:
-    image: redis:latest
-    container_name: redis-server
-    ports:
-      - "6379:6379"
+    depends_on:
+      - auth-service
+      - catalog-service
+      - session-service
+      - interface-service
+      - user-service
+      - search-service  
     networks:
       - microservices-network
 
