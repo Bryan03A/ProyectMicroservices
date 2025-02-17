@@ -1,3 +1,5 @@
+networks:
+  microservices-network:
 services:
   auth-service:
     image: bfury0329/auth-service

@@ -1,3 +1,5 @@
+networks:
+  microservices-network:
 services:
 
   interface-service:
