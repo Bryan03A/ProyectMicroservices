@@ -15,7 +15,7 @@ import (
 
 var (
 	POSTGRES_URI = "postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres"
-	CATALOG_URL  = "http://52.205.200.130:5003/models/id/" // URL base del servicio catalog-service
+	CATALOG_URL  = "http://52.91.86.137:5003/models/id/" // URL base del servicio catalog-service
 )
 
 type Order struct {
@@ -128,7 +128,7 @@ func main() {
 	router.Use(gin.Logger(), gin.Recovery())
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://52.205.200.130:8080"}, // Permitir solo la interfaz
+		AllowOrigins:     []string{"http://52.91.86.137:8080"}, // Permitir solo la interfaz
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
