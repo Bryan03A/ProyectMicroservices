@@ -90,8 +90,8 @@ services:
       - microservices-network
 
   customization-service:
-    image: bfury0329/customization-service
-    build: ./customization-service
+    image: bfury0329/custom-service
+    build: ./custom-service
     ports:
       - "5007:5007"
     environment:
