@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   auth-service:
@@ -74,7 +74,7 @@ services:
       - "5005:5005"
     environment:
       - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
-      - ELASTICSEARCH_URI=http://localhost:9200
+      - ELASTICSEARCH_URI=http://elasticsearch:9200
     networks:
       - microservices-network
 
@@ -86,8 +86,6 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    depends_on:
-      - redis
     networks:
       - microservices-network
 
@@ -100,10 +98,6 @@ services:
       - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
       - POSTGRES_URI=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
       - AUTH_SERVICE_URL=http://auth-service:5001
-    depends_on:
-      - postgres
-      - catalog-service
-      - auth-service
     networks:
       - microservices-network
 
@@ -115,9 +109,6 @@ services:
     environment:
       - POSTGRES_URI=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
       - CATALOG_URL=http://catalog-service:5003/models/id/
-    depends_on:
-      - postgres
-      - catalog-service
     networks:
       - microservices-network
 
@@ -129,9 +120,6 @@ services:
     environment:
       - POSTGRES_URI=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
       - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
-    depends_on:
-      - postgres
-      - mongo
     networks:
       - microservices-network
 
@@ -147,7 +135,28 @@ services:
       - session-service
       - interface-service
       - user-service
-      - search-service  
+      - search-service
+    networks:
+      - microservices-network
+
+  # Servicio de Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - microservices-network
+
+  # Servicio de Redis
+  redis:
+    image: redis:latest
+    container_name: redis-server
+    ports:
+      - "6379:6379"
     networks:
       - microservices-network
 
