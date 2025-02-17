@@ -6,13 +6,6 @@ services:
       - "80:80" 
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - auth-service
-      - catalog-service
-      - session-service
-      - interface-service
-      - user-service
-      - search-service
     networks:
       - microservices-network
 
