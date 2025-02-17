@@ -1,6 +1,11 @@
 # Base image for Python
 FROM python:3.9-slim
 
+# Instal dependencies
+RUN apt-get update && \
+    apt-get install -y libpq-dev gcc && \
+    rm -rf /var/lib/apt/lists/*
+
 # Set the working directory
 WORKDIR /app
 
