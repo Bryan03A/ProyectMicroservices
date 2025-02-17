@@ -1,0 +1,13 @@
+services:
+
+  custom-service:
+    image: bfury0329/custom-service
+    build: ./custom-service
+    ports:
+      - "5007:5007"
+    environment:
+      - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
+      - POSTGRES_URI=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+      - AUTH_SERVICE_URL=http://auth-service:5001
+    networks:
+      - microservices-network

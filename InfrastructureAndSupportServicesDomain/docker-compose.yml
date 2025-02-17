@@ -1,0 +1,19 @@
+services:
+
+  interface-service:
+    image: bfury0329/interface-service
+    build: ./interface-service
+    ports:
+      - "8080:8080"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - CATALOG_SERVICE_URL=http://catalog-service:5003
+      - SESSION_SERVICE_URL=http://session-service:5004
+      - USER_SERVICE_URL=http://user-service:5002
+      - SEARCH_SERVICE_URL=http://search-service:5005
+      - ORDERS_SERVICE_URL=http://orders-service:5008
+      - RECOMMENDATION_SERVICE_URL=http://recommendation-service:5006
+      - CUSTOM_SERVICE_URL=http://custom-service:5007
+      - CHAT_SERVICE_URL=http://chat-service:5010
+    networks:
+      - microservices-network

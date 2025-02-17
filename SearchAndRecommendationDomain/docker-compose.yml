@@ -1,0 +1,23 @@
+services:
+
+  search-service:
+    image: bfury0329/search-service
+    build: ./search-service
+    ports:
+      - "5005:5005"
+    environment:
+      - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
+      - ELASTICSEARCH_URI=http://elasticsearch:9200
+    networks:
+      - microservices-network
+
+  recommendation-service:
+    image: bfury0329/recommendation-service
+    build: ./recommendation-service
+    ports:
+      - "5006:5006"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - microservices-network

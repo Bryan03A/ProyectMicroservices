@@ -1,0 +1,12 @@
+services:
+
+  orders-service:
+    image: bfury0329/orders-service
+    build: ./orders-service
+    ports:
+      - "5008:5008"
+    environment:
+      - POSTGRES_URI=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+      - CATALOG_URL=http://catalog-service:5003/models/id/
+    networks:
+      - microservices-network

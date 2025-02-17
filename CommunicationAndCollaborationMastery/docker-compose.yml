@@ -1,0 +1,12 @@
+services:
+
+  chat-service:
+    image: bfury0329/chat-service
+    build: ./chat-service
+    ports:
+      - "5010:5010"
+    environment:
+      - POSTGRES_URI=postgresql://postgres.imfqyzgimtercyyqeqof:1997Guallaba@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+      - MONGO_URI=mongodb+srv://MicroserviceDev:1997999@cluster0.hdqpd.mongodb.net/CatalogServiceDB?retryWrites=true&w=majority
+    networks:
+      - microservices-network
