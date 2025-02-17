@@ -16,10 +16,6 @@ Thumbs.db
 # Archivos de configuración locales
 .env
 
-# Archivos de módulos Go
-go.sum
-go.mod
-
 # Archivos de compilación
 *.exe
 *.exe~
