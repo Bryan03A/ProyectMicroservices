@@ -8,8 +8,8 @@ const port = 5006;
 // Configurar Redis
 const redisClient = redis.createClient({
     socket: {
-        host: "localhost",
-        port: 6379
+        host: process.env.REDIS_HOST || "52.205.200.130",  // Use "redis" in Docker
+        port: process.env.REDIS_PORT || 6379
     }
 });
 
@@ -83,5 +83,5 @@ app.get("/recent-searches", async (req, res) => {
 
 // Iniciar el servidor
 app.listen(port, () => {
-    console.log(`Servidor Redis-Service escuchando en http://localhost:${port}`);
+    console.log(`Servidor Redis-Service escuchando en http://52.205.200.130:${port}`);
 });

@@ -90,7 +90,7 @@
 
     <!-- Iframe Container -->
     <div class="iframe-container" id="iframeContainer">
-        <iframe src="http://localhost:5010" frameborder="0"></iframe>
+        <iframe src="http://52.205.200.130:5010" frameborder="0"></iframe>
     </div>
 
     <!-- Footer -->
@@ -165,7 +165,7 @@
 
                 // Save the search to Redis with the name of the first model
                 if (firstModelName) {
-                    await fetch("http://localhost:5006/save-search", {
+                    await fetch("http://52.205.200.130:5006/save-search", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ query, creator, username, firstModelName, firstModelId })  // Send firstModelId as well
@@ -205,7 +205,7 @@
             if (!username) return;
 
             try {
-                const response = await fetch("http://localhost:5006/recent-searches?username=" + username);
+                const response = await fetch("http://52.205.200.130:5006/recent-searches?username=" + username);
                 const data = await response.json();
 
                 const recommendedContainer = document.getElementById("recommended-container");
@@ -224,7 +224,7 @@
 
         async function fetchModelByName(firstModelName) {
             try {
-                const response = await fetch(`http://localhost:5003/models/${firstModelName}`);
+                const response = await fetch(`http://52.205.200.130:5003/models/${firstModelName}`);
                 const data = await response.json();  // Get the response
 
                 const model = data.model;  // Extract the model from the response

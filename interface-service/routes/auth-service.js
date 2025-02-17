@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 
 const router = express.Router();
-const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:5001';
+const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://52.205.200.130:5001';
 
 // Route to handle user login
 router.post('/login', async (req, res) => {
